@@ -8,7 +8,7 @@
 
 #import "DJCalendarViewController.h"
 
-@interface DJCalendarViewController ()<UIScrollViewDelegate>
+@interface DJCalendarViewController ()<UIScrollViewDelegate, DJCalendarHeaderViewDelegate>
 
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) DJCalendarHeaderView *headerView;
@@ -46,6 +46,7 @@
     self.view = view;
     
     DJCalendarHeaderView *headerView = [[DJCalendarHeaderView alloc] initWithFrame:CGRectMake(0, 64, view.frame.size.width, 44)];
+    headerView.delegate = self;
     [view addSubview:headerView];
     self.headerView = headerView;
     
@@ -53,12 +54,21 @@
     scrollView.contentSize = CGSizeMake(scrollView.frame.size.width * 4, scrollView.frame.size.height);
     [view addSubview:scrollView];
     scrollView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    scrollView.delegate = self;
+    scrollView.pagingEnabled = YES;
     self.scrollView = scrollView;
+    
+    for (NSInteger i =0; i<4; i++) {
+        CGFloat x = i * _scrollView.bounds.size.width;
+        UIView *v = [[UIView alloc] initWithFrame:CGRectMake(x, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height)];
+        v.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:(1 - 0.1 * i)];
+        [_scrollView addSubview:v];
+    }
     
 }
 
 
-#pragma mark - Target actions
+#pragma mark - Target Actions
 
 - (void)backItemClicked:(id)sender
 {
@@ -66,5 +76,20 @@
         NSLog(@"Dismiss.Complete");
     }];
 }
+
+#pragma mark - UIScrollViewDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    CGFloat offset = scrollView.contentOffset.x / scrollView.contentSize.width;
+    [_headerView updateLinePath:offset];
+}
+
+#pragma mark - DJCalendarHeaderViewDelegate
+- (void)dj_calendar:(DJCalendarHeaderView *)calendarHeaderView didSelectPageAtIndex:(NSInteger)index
+{
+    CGFloat offset_X = _scrollView.bounds.size.width * index;
+    [_scrollView setContentOffset:CGPointMake(offset_X, 0) animated:YES];
+}
+
 
 @end

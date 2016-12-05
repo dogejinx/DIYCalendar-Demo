@@ -19,7 +19,6 @@
 
 @property (nonatomic, strong) CAShapeLayer *selectLayer;
 @property (nonatomic, strong) NSMutableArray <UIBezierPath *> *selectLinePathArr;
-@property(nonatomic) CABasicAnimation *pathAnimation;
 
 @property (nonatomic, strong) UIColor *btnHighlightColor;
 @property (nonatomic, strong) UIColor *btnNormalColor;
@@ -30,6 +29,8 @@
 @property (assign) CGFloat bottomLineHeight;
 
 @property (assign) NSInteger currentIndex;
+
+@property (nonatomic, strong) NSMutableArray<NSString *> *btnTitleArr;
 
 
 @end
@@ -43,58 +44,39 @@
         
         [self setupDefaultValue];
         
-        UIView *view;
-        UIButton *btn;
-        
         {
-            view = [[UIView alloc] initWithFrame:CGRectZero];
+            UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
             view.backgroundColor = [UIColor whiteColor];
             [self addSubview:view];
             self.contentView = view;
         }
         
-        {
-            btn = [[UIButton alloc] initWithFrame:CGRectZero];
+        for (NSInteger i=0; i<_btnTitleArr.count; i++) {
+            UIButton *btn = [[UIButton alloc] initWithFrame:CGRectZero];
             btn.titleLabel.textAlignment = NSTextAlignmentCenter;
-            [btn setTitle:@"按日" forState:UIControlStateNormal];
-            [btn setTitleColor:_btnHighlightColor forState:UIControlStateNormal];
+            [btn setTitle:_btnTitleArr[i] forState:UIControlStateNormal];
+            if (_currentIndex == i) {
+                [btn setTitleColor:_btnHighlightColor forState:UIControlStateNormal];
+            }
+            else {
+                [btn setTitleColor:_btnNormalColor forState:UIControlStateNormal];
+            }
             [btn addTarget:self action:@selector(btnHandler:) forControlEvents:UIControlEventTouchUpInside];
             [btn.titleLabel setFont:_btnFont];
             [_contentView addSubview:btn];
-            self.btnByDate = btn;
-        }
-        
-        {
-            btn = [[UIButton alloc] initWithFrame:CGRectZero];
-            btn.titleLabel.textAlignment = NSTextAlignmentCenter;
-            [btn setTitle:@"按周" forState:UIControlStateNormal];
-            [btn setTitleColor:_btnNormalColor forState:UIControlStateNormal];
-            [btn addTarget:self action:@selector(btnHandler:) forControlEvents:UIControlEventTouchUpInside];
-            [btn.titleLabel setFont:_btnFont];
-            [_contentView addSubview:btn];
-            self.btnByWeek = btn;
-        }
-        
-        {
-            btn = [[UIButton alloc] initWithFrame:CGRectZero];
-            btn.titleLabel.textAlignment = NSTextAlignmentCenter;
-            [btn setTitle:@"按月" forState:UIControlStateNormal];
-            [btn setTitleColor:_btnNormalColor forState:UIControlStateNormal];
-            [btn addTarget:self action:@selector(btnHandler:) forControlEvents:UIControlEventTouchUpInside];
-            [btn.titleLabel setFont:_btnFont];
-            [_contentView addSubview:btn];
-            self.btnByMonth = btn;
-        }
-        
-        {
-            btn = [[UIButton alloc] initWithFrame:CGRectZero];
-            btn.titleLabel.textAlignment = NSTextAlignmentCenter;
-            [btn setTitle:@"按年" forState:UIControlStateNormal];
-            [btn setTitleColor:_btnNormalColor forState:UIControlStateNormal];
-            [btn addTarget:self action:@selector(btnHandler:) forControlEvents:UIControlEventTouchUpInside];
-            [btn.titleLabel setFont:_btnFont];
-            [_contentView addSubview:btn];
-            self.btnByYear = btn;
+            
+            if (i==0) {
+                self.btnByDate = btn;
+            }
+            else if (i==1) {
+                self.btnByWeek = btn;
+            }
+            else if (i==2) {
+                self.btnByMonth = btn;
+            }
+            else if (i==3) {
+                self.btnByYear = btn;
+            }
         }
         self.btnArr = @[_btnByDate, _btnByWeek, _btnByMonth, _btnByYear];
         
@@ -177,34 +159,41 @@
     self.btnHighlightColor = UIColorFromRGB(0x3f3f3f);
     self.btnNormalColor = UIColorFromRGB(0xaeb4bc);
     self.btnFont = [UIFont boldSystemFontOfSize:16];
-
+    
     self.currentIndex = 0;
     self.viewMargin = 8.0;
     self.bottomLineHeight = 2.0;
+    
+    NSArray *arr = @[@"按日",@"按周",@"按日",@"按日"];
+    self.btnTitleArr = [arr mutableCopy];
 }
 
-- (CABasicAnimation *)pathAnimation {
-    
-    if (!_pathAnimation) {
-        _pathAnimation = [CABasicAnimation animationWithKeyPath:@"path"];
-        _pathAnimation.duration = 0.2f;
-        _pathAnimation.autoreverses = NO;
-        _pathAnimation.removedOnCompletion = NO;
-        _pathAnimation.fillMode = kCAFillModeForwards;
-        _pathAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        [_selectLayer addAnimation:_pathAnimation forKey:@"animationKey"];
-    }
-    
-    _pathAnimation.fromValue = (id) _selectLayer.path;
-    _pathAnimation.toValue = (id) [_selectLinePathArr[_currentIndex] CGPath];
-    
-    return _pathAnimation;
-}
-
-- (void)updateCalendarView:(NSInteger)i
+- (void)updateCalendarView:(NSInteger)index
 {
-    [_selectLayer addAnimation:self.pathAnimation forKey:@"path"];
-    [self setNeedsLayout];
+    for (NSInteger i=0; i< _btnArr.count; i++) {
+        UIButton *btn = _btnArr[i];
+        if (index == i) {
+            [btn setTitleColor:_btnHighlightColor forState:UIControlStateNormal];
+        }
+        else {
+            [btn setTitleColor:_btnNormalColor forState:UIControlStateNormal];
+        }
+    }
+}
+
+- (void)updateLinePath:(CGFloat)offset
+{
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(_viewMargin + (_btnWidth * 4) * offset, self.bounds.size.height - 2)];
+    [path addLineToPoint:CGPointMake(_viewMargin + (_btnWidth * 4) * offset + _btnWidth , self.bounds.size.height - 2)];
+    
+    _selectLayer.path = path.CGPath;
+    
+    if (offset == 0.0 || offset == 0.25 || offset == 0.5 || offset == 0.75) {
+        NSInteger index = (NSInteger)(offset * 4);
+        _currentIndex = index;
+        [self updateCalendarView:index];
+    }
 }
 
 #pragma mark - Target Handler
@@ -214,11 +203,10 @@
         UIButton *btn = _btnArr[i];
         if (sender == btn) {
             _currentIndex = i;
-            [self updateCalendarView:i];
-            [btn setTitleColor:_btnHighlightColor forState:UIControlStateNormal];
-        }
-        else {
-            [btn setTitleColor:_btnNormalColor forState:UIControlStateNormal];
+            if([self.delegate respondsToSelector:@selector(dj_calendar:didSelectPageAtIndex:)]) {
+                [self.delegate dj_calendar:self didSelectPageAtIndex:_currentIndex];
+            }
+            break;
         }
     }
 }
