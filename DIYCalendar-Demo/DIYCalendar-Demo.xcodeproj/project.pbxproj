@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7636BAAF1DF7B4690070487E /* DJCalendarByDateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636BAAE1DF7B4690070487E /* DJCalendarByDateViewController.m */; };
+		7636BAB21DF7B65D0070487E /* DJCalendarByWeekViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636BAB11DF7B65D0070487E /* DJCalendarByWeekViewController.m */; };
+		7636BAB51DF7B7EC0070487E /* DJCalendarByMonthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636BAB41DF7B7EC0070487E /* DJCalendarByMonthViewController.m */; };
+		7636BAB81DF7B8020070487E /* DJCalendarByYearViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636BAB71DF7B8020070487E /* DJCalendarByYearViewController.m */; };
+		7636BABF1DF7E7070070487E /* DJCalendarWeekView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636BABE1DF7E7070070487E /* DJCalendarWeekView.m */; };
+		7636BAC31DF7EC1E0070487E /* DJCalendarConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636BAC21DF7EC1E0070487E /* DJCalendarConstants.m */; };
+		7636BAC91DF811780070487E /* DJCalendarMainTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636BAC81DF811780070487E /* DJCalendarMainTableViewCell.m */; };
+		7636BACC1DF811900070487E /* DJCalendarSubTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7636BACB1DF811900070487E /* DJCalendarSubTableViewCell.m */; };
 		7658023C1DF4095F00EAE6FF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7658023B1DF4095F00EAE6FF /* main.m */; };
 		7658023F1DF4095F00EAE6FF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7658023E1DF4095F00EAE6FF /* AppDelegate.m */; };
 		765802421DF4095F00EAE6FF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802411DF4095F00EAE6FF /* ViewController.m */; };
@@ -52,6 +60,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7636BAAD1DF7B4690070487E /* DJCalendarByDateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarByDateViewController.h; sourceTree = "<group>"; };
+		7636BAAE1DF7B4690070487E /* DJCalendarByDateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarByDateViewController.m; sourceTree = "<group>"; };
+		7636BAB01DF7B65D0070487E /* DJCalendarByWeekViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarByWeekViewController.h; sourceTree = "<group>"; };
+		7636BAB11DF7B65D0070487E /* DJCalendarByWeekViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarByWeekViewController.m; sourceTree = "<group>"; };
+		7636BAB31DF7B7EC0070487E /* DJCalendarByMonthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarByMonthViewController.h; sourceTree = "<group>"; };
+		7636BAB41DF7B7EC0070487E /* DJCalendarByMonthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarByMonthViewController.m; sourceTree = "<group>"; };
+		7636BAB61DF7B8020070487E /* DJCalendarByYearViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarByYearViewController.h; sourceTree = "<group>"; };
+		7636BAB71DF7B8020070487E /* DJCalendarByYearViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarByYearViewController.m; sourceTree = "<group>"; };
+		7636BABD1DF7E7070070487E /* DJCalendarWeekView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarWeekView.h; sourceTree = "<group>"; };
+		7636BABE1DF7E7070070487E /* DJCalendarWeekView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarWeekView.m; sourceTree = "<group>"; };
+		7636BAC11DF7EC1E0070487E /* DJCalendarConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarConstants.h; sourceTree = "<group>"; };
+		7636BAC21DF7EC1E0070487E /* DJCalendarConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarConstants.m; sourceTree = "<group>"; };
+		7636BAC71DF811780070487E /* DJCalendarMainTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarMainTableViewCell.h; sourceTree = "<group>"; };
+		7636BAC81DF811780070487E /* DJCalendarMainTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarMainTableViewCell.m; sourceTree = "<group>"; };
+		7636BACA1DF811900070487E /* DJCalendarSubTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarSubTableViewCell.h; sourceTree = "<group>"; };
+		7636BACB1DF811900070487E /* DJCalendarSubTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarSubTableViewCell.m; sourceTree = "<group>"; };
 		765802371DF4095F00EAE6FF /* DIYCalendar-Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DIYCalendar-Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7658023B1DF4095F00EAE6FF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		7658023D1DF4095F00EAE6FF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -130,6 +154,62 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7636BAB91DF7B8DA0070487E /* ByDate */ = {
+			isa = PBXGroup;
+			children = (
+				7636BAAD1DF7B4690070487E /* DJCalendarByDateViewController.h */,
+				7636BAAE1DF7B4690070487E /* DJCalendarByDateViewController.m */,
+			);
+			name = ByDate;
+			sourceTree = "<group>";
+		};
+		7636BABA1DF7B8E70070487E /* ByWeek */ = {
+			isa = PBXGroup;
+			children = (
+				7636BAB01DF7B65D0070487E /* DJCalendarByWeekViewController.h */,
+				7636BAB11DF7B65D0070487E /* DJCalendarByWeekViewController.m */,
+			);
+			name = ByWeek;
+			sourceTree = "<group>";
+		};
+		7636BABB1DF7B8F00070487E /* ByMonth */ = {
+			isa = PBXGroup;
+			children = (
+				7636BAB31DF7B7EC0070487E /* DJCalendarByMonthViewController.h */,
+				7636BAB41DF7B7EC0070487E /* DJCalendarByMonthViewController.m */,
+			);
+			name = ByMonth;
+			sourceTree = "<group>";
+		};
+		7636BABC1DF7B8F90070487E /* ByYear */ = {
+			isa = PBXGroup;
+			children = (
+				7636BAB61DF7B8020070487E /* DJCalendarByYearViewController.h */,
+				7636BAB71DF7B8020070487E /* DJCalendarByYearViewController.m */,
+			);
+			name = ByYear;
+			sourceTree = "<group>";
+		};
+		7636BAC01DF7E7460070487E /* WeekView */ = {
+			isa = PBXGroup;
+			children = (
+				7636BABD1DF7E7070070487E /* DJCalendarWeekView.h */,
+				7636BABE1DF7E7070070487E /* DJCalendarWeekView.m */,
+			);
+			name = WeekView;
+			sourceTree = "<group>";
+		};
+		7636BACD1DF811970070487E /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				7636BAC71DF811780070487E /* DJCalendarMainTableViewCell.h */,
+				7636BAC81DF811780070487E /* DJCalendarMainTableViewCell.m */,
+				7636BACA1DF811900070487E /* DJCalendarSubTableViewCell.h */,
+				7636BACB1DF811900070487E /* DJCalendarSubTableViewCell.m */,
+			);
+			name = Cell;
+			sourceTree = "<group>";
+		};
 		7658022E1DF4095F00EAE6FF = {
 			isa = PBXGroup;
 			children = (
@@ -239,6 +319,14 @@
 				7658029D1DF409FA00EAE6FF /* DJCalendarViewController.m */,
 				765802CC1DF416DD00EAE6FF /* DJCalendarHeaderView.h */,
 				765802CD1DF416DD00EAE6FF /* DJCalendarHeaderView.m */,
+				7636BAC11DF7EC1E0070487E /* DJCalendarConstants.h */,
+				7636BAC21DF7EC1E0070487E /* DJCalendarConstants.m */,
+				7636BACD1DF811970070487E /* Cell */,
+				7636BAC01DF7E7460070487E /* WeekView */,
+				7636BAB91DF7B8DA0070487E /* ByDate */,
+				7636BABA1DF7B8E70070487E /* ByWeek */,
+				7636BABB1DF7B8F00070487E /* ByMonth */,
+				7636BABC1DF7B8F90070487E /* ByYear */,
 			);
 			name = DJCalendar;
 			sourceTree = "<group>";
@@ -379,13 +467,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7636BAC91DF811780070487E /* DJCalendarMainTableViewCell.m in Sources */,
 				765802421DF4095F00EAE6FF /* ViewController.m in Sources */,
+				7636BABF1DF7E7070070487E /* DJCalendarWeekView.m in Sources */,
 				765802CE1DF416DD00EAE6FF /* DJCalendarHeaderView.m in Sources */,
+				7636BAB21DF7B65D0070487E /* DJCalendarByWeekViewController.m in Sources */,
 				765802BE1DF40A4E00EAE6FF /* FSCalendar+Deprecated.m in Sources */,
+				7636BAB81DF7B8020070487E /* DJCalendarByYearViewController.m in Sources */,
 				765802C11DF40A4E00EAE6FF /* FSCalendarCalculator.m in Sources */,
 				7658023F1DF4095F00EAE6FF /* AppDelegate.m in Sources */,
 				765802C21DF40A4E00EAE6FF /* FSCalendarCell.m in Sources */,
 				765802C51DF40A4E00EAE6FF /* FSCalendarConstants.m in Sources */,
+				7636BAB51DF7B7EC0070487E /* DJCalendarByMonthViewController.m in Sources */,
 				765802C61DF40A4E00EAE6FF /* FSCalendarDelegateProxy.m in Sources */,
 				7658029E1DF409FA00EAE6FF /* DJCalendarViewController.m in Sources */,
 				765802C81DF40A4E00EAE6FF /* FSCalendarHeaderView.m in Sources */,
@@ -394,10 +487,13 @@
 				765802CA1DF40A4E00EAE6FF /* FSCalendarStickyHeader.m in Sources */,
 				765802C71DF40A4E00EAE6FF /* FSCalendarExtensions.m in Sources */,
 				765802C31DF40A4E00EAE6FF /* FSCalendarCollectionView.m in Sources */,
+				7636BACC1DF811900070487E /* DJCalendarSubTableViewCell.m in Sources */,
+				7636BAC31DF7EC1E0070487E /* DJCalendarConstants.m in Sources */,
 				765802C01DF40A4E00EAE6FF /* FSCalendarAppearance.m in Sources */,
 				765802C91DF40A4E00EAE6FF /* FSCalendarScopeHandle.m in Sources */,
 				7658023C1DF4095F00EAE6FF /* main.m in Sources */,
 				765802BD1DF40A4E00EAE6FF /* FSCalendar.m in Sources */,
+				7636BAAF1DF7B4690070487E /* DJCalendarByDateViewController.m in Sources */,
 				765802BF1DF40A4E00EAE6FF /* FSCalendarAnimator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -642,6 +738,7 @@
 				765802661DF4096000EAE6FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		765802671DF4096000EAE6FF /* Build configuration list for PBXNativeTarget "DIYCalendar-DemoTests" */ = {
 			isa = XCConfigurationList;
@@ -650,6 +747,7 @@
 				765802691DF4096000EAE6FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		7658026A1DF4096000EAE6FF /* Build configuration list for PBXNativeTarget "DIYCalendar-DemoUITests" */ = {
 			isa = XCConfigurationList;
@@ -658,6 +756,7 @@
 				7658026C1DF4096000EAE6FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
