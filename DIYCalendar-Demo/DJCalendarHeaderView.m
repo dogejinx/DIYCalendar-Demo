@@ -95,8 +95,8 @@
         _selectLinePathArr = [[NSMutableArray alloc] initWithCapacity:4];
         for (NSInteger i=0; i<4; i++) {
             UIBezierPath *path = [UIBezierPath bezierPath];
-            [path moveToPoint:CGPointMake(_viewMargin + _btnWidth * i, self.bounds.size.height - 2)];
-            [path addLineToPoint:CGPointMake(_viewMargin + _btnWidth * (i+1), self.bounds.size.height - 2)];
+            [path moveToPoint:CGPointMake(_viewMargin + _btnWidth * i, self.bounds.size.height - _bottomLineHeight/2.f)];
+            [path addLineToPoint:CGPointMake(_viewMargin + _btnWidth * (i+1), self.bounds.size.height - _bottomLineHeight/2.f)];
             [_selectLinePathArr addObject:path];
         }
     }
@@ -121,7 +121,7 @@
         selectLayer.lineCap = kCALineCapRound;
         selectLayer.lineJoin = kCALineJoinRound;
         selectLayer.fillColor = [UIColorFromRGB(0x3897f0) CGColor];
-        selectLayer.lineWidth = 2.f;
+        selectLayer.lineWidth = _bottomLineHeight;
         _selectLayer = selectLayer;
         [self.layer addSublayer:selectLayer];
     }
@@ -131,22 +131,16 @@
 
 - (void)drawRect:(CGRect)rect
 {
+    CGFloat lineWidth = 0.5f;
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     UIGraphicsPushContext(ctx);
-    CGContextSetLineWidth(ctx, 1);
+    CGContextSetLineWidth(ctx, lineWidth);
     CGContextSetStrokeColorWithColor(ctx, UIColorFromRGB(0xdcdcdc).CGColor);
     
     // 绘制 底部水平线
     {
-        CGContextMoveToPoint(ctx, 0, self.bounds.size.height);
-        CGContextAddLineToPoint(ctx, self.bounds.size.width, self.bounds.size.height - 1);
-        CGContextStrokePath(ctx);
-    }
-    
-    // 绘制 底部选中红线
-    {
-        CGContextMoveToPoint(ctx, 0, self.bounds.size.height);
-        CGContextAddLineToPoint(ctx, self.bounds.size.width, self.bounds.size.height - 1);
+        CGContextMoveToPoint(ctx, 0, self.bounds.size.height - lineWidth/2.f);
+        CGContextAddLineToPoint(ctx, self.bounds.size.width, self.bounds.size.height - lineWidth/2.f);
         CGContextStrokePath(ctx);
     }
     
@@ -162,9 +156,9 @@
     
     self.currentIndex = 0;
     self.viewMargin = 8.0;
-    self.bottomLineHeight = 2.0;
+    self.bottomLineHeight = 2.5;
     
-    NSArray *arr = @[@"按日",@"按周",@"按日",@"按日"];
+    NSArray *arr = @[@"按日",@"按周",@"按月",@"按年"];
     self.btnTitleArr = [arr mutableCopy];
 }
 
@@ -184,8 +178,8 @@
 - (void)updateLinePath:(CGFloat)offset
 {
     UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(_viewMargin + (_btnWidth * 4) * offset, self.bounds.size.height - 2)];
-    [path addLineToPoint:CGPointMake(_viewMargin + (_btnWidth * 4) * offset + _btnWidth , self.bounds.size.height - 2)];
+    [path moveToPoint:CGPointMake(_viewMargin + (_btnWidth * 4) * offset, self.bounds.size.height - _bottomLineHeight/2.f)];
+    [path addLineToPoint:CGPointMake(_viewMargin + (_btnWidth * 4) * offset + _btnWidth , self.bounds.size.height - _bottomLineHeight/2.f)];
     
     _selectLayer.path = path.CGPath;
     

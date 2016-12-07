@@ -61,7 +61,7 @@
     for (NSInteger i =0; i<4; i++) {
         CGFloat x = i * _scrollView.bounds.size.width;
         UIView *v = [[UIView alloc] initWithFrame:CGRectMake(x, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height)];
-        v.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:(1 - 0.1 * i)];
+        v.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:(1 - 0.2 * i)];
         [_scrollView addSubview:v];
     }
     

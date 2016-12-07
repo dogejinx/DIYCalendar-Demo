@@ -9,6 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "DJCalendarHeaderView.h"
 
+typedef void(^CallBackBlock) (NSString *text);
+
 @interface DJCalendarViewController : UIViewController
+
+@property (nonatomic, copy) CallBackBlock callBackBlock;
+
+
+
 
 @end
