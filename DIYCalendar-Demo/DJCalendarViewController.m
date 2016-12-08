@@ -8,6 +8,7 @@
 
 #import "DJCalendarViewController.h"
 #import "DJCalendarByDateViewController.h"
+#import "DJCalendarByWeekViewController.h"
 #import "DJCalendarByMonthViewController.h"
 #import "DJCalendarByYearViewController.h"
 
@@ -105,7 +106,15 @@
     }
     
     // 设置 周Page
-    
+    {
+        DJCalendarByWeekViewController * byWeek = [[DJCalendarByWeekViewController alloc] init];
+        byWeek.calendarStartDate = _calendarStartDate;
+        byWeek.calendarEndDate = _calendarEndDate;
+        [self addChildViewController:byWeek];
+        [byWeek didMoveToParentViewController:self];
+        byWeek.view.frame = CGRectMake(1 * _scrollView.bounds.size.width, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height);
+        [_scrollView addSubview:byWeek.view];
+    }
 
     // 设置 月Page
     {

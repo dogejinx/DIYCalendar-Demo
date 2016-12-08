@@ -15,6 +15,7 @@
 
 @property (nonatomic, strong) NSMutableArray<NSDate *> *yearArr;
 @property (nonatomic, strong) NSMutableArray<NSIndexPath *> *selectArr;
+
 @property (nonatomic, strong) NSCalendar *calendar;
 
 @end
@@ -109,9 +110,9 @@
             startDate = _calendarEndDate;
             endDate = _calendarStartDate;
         }
-        NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-        NSInteger startDateYear = [calendar component:NSCalendarUnitYear fromDate:startDate];
-        NSInteger endDateYear = [calendar component:NSCalendarUnitYear fromDate:endDate];
+    
+        NSInteger startDateYear = [_calendar component:NSCalendarUnitYear fromDate:startDate];
+        NSInteger endDateYear = [_calendar component:NSCalendarUnitYear fromDate:endDate];
         
         NSMutableArray *yearArr = [NSMutableArray array];
         for (NSInteger i=endDateYear; i>=startDateYear; i--) {
@@ -119,7 +120,7 @@
             [dateComponentsForDate setDay:1];
             [dateComponentsForDate setMonth:1];
             [dateComponentsForDate setYear:i];
-            NSDate *dateFromDateComponentsForDate = [calendar dateFromComponents:dateComponentsForDate];
+            NSDate *dateFromDateComponentsForDate = [_calendar dateFromComponents:dateComponentsForDate];
             [yearArr addObject:dateFromDateComponentsForDate];
         }
         _yearArr = yearArr;

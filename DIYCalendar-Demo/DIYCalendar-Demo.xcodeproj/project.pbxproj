@@ -41,6 +41,7 @@
 		765802CB1DF40A4E00EAE6FF /* FSCalendarWeekdayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802BC1DF40A4E00EAE6FF /* FSCalendarWeekdayView.m */; };
 		765802CE1DF416DD00EAE6FF /* DJCalendarHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802CD1DF416DD00EAE6FF /* DJCalendarHeaderView.m */; };
 		765802D21DF9C67800EAE6FF /* DIYCalendarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802D11DF9C67800EAE6FF /* DIYCalendarCell.m */; };
+		765802DF1DF9F38900EAE6FF /* DJTableViewHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802DE1DF9F38900EAE6FF /* DJTableViewHeader.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -130,6 +131,8 @@
 		765802CF1DF42BBD00EAE6FF /* DIYCalendar-Demo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DIYCalendar-Demo-Prefix.pch"; sourceTree = "<group>"; };
 		765802D01DF9C67800EAE6FF /* DIYCalendarCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DIYCalendarCell.h; sourceTree = "<group>"; };
 		765802D11DF9C67800EAE6FF /* DIYCalendarCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DIYCalendarCell.m; sourceTree = "<group>"; };
+		765802DD1DF9F38900EAE6FF /* DJTableViewHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJTableViewHeader.h; sourceTree = "<group>"; };
+		765802DE1DF9F38900EAE6FF /* DJTableViewHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJTableViewHeader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -326,6 +329,7 @@
 				765802CD1DF416DD00EAE6FF /* DJCalendarHeaderView.m */,
 				7636BAC11DF7EC1E0070487E /* DJCalendarConstants.h */,
 				7636BAC21DF7EC1E0070487E /* DJCalendarConstants.m */,
+				765802D91DF9F2EF00EAE6FF /* TableViewHeader */,
 				7636BACD1DF811970070487E /* Cell */,
 				7636BAC01DF7E7460070487E /* WeekView */,
 				7636BAB91DF7B8DA0070487E /* ByDate */,
@@ -334,6 +338,15 @@
 				7636BABC1DF7B8F90070487E /* ByYear */,
 			);
 			name = DJCalendar;
+			sourceTree = "<group>";
+		};
+		765802D91DF9F2EF00EAE6FF /* TableViewHeader */ = {
+			isa = PBXGroup;
+			children = (
+				765802DD1DF9F38900EAE6FF /* DJTableViewHeader.h */,
+				765802DE1DF9F38900EAE6FF /* DJTableViewHeader.m */,
+			);
+			name = TableViewHeader;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -500,6 +513,7 @@
 				7658023C1DF4095F00EAE6FF /* main.m in Sources */,
 				765802BD1DF40A4E00EAE6FF /* FSCalendar.m in Sources */,
 				7636BAAF1DF7B4690070487E /* DJCalendarByDateViewController.m in Sources */,
+				765802DF1DF9F38900EAE6FF /* DJTableViewHeader.m in Sources */,
 				765802BF1DF40A4E00EAE6FF /* FSCalendarAnimator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

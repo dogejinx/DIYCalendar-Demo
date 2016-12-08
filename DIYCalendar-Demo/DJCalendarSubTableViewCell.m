@@ -49,8 +49,17 @@
 - (void)drawRect:(CGRect)rect
 {
     UIColor *aColor = [UIColor clearColor];
+    
     if (self.choose) {
         aColor = UIColorFromRGB(0xf6f6f6);
+        self.accessoryType = UITableViewCellAccessoryCheckmark;
+        _calendarLabel.textColor = UIColorFromRGB(0x3897f0);
+        _calendarLabel.font = [UIFont boldSystemFontOfSize:15.f];
+    }
+    else {
+        self.accessoryType = UITableViewCellAccessoryNone;
+        _calendarLabel.textColor = UIColorFromRGB(0x79828f);
+        _calendarLabel.font = [UIFont systemFontOfSize:15.f];
     }
     
     CGContextRef context = UIGraphicsGetCurrentContext();

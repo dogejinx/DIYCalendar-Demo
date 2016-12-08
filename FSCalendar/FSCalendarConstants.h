@@ -42,7 +42,7 @@ UIKIT_EXTERN NSString * const FSCalendarInvalidArgumentsExceptionName;
 #endif
 
 #define FSCalendarStandardSelectionColor   UIColorFromRGB(0x3897f0)
-#define FSCalendarStandardTodayColor       FSColorRGBA(198,51,42 ,1.0)
+#define FSCalendarStandardTodayColor       FSColorRGBA(255,154,154 ,1.0)
 #define FSCalendarStandardTitleTextColor   FSColorRGBA(14,69,221 ,1.0)
 #define FSCalendarStandardEventDotColor    FSColorRGBA(31,119,219,0.75)
 
