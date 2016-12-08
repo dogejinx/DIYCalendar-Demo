@@ -10,8 +10,7 @@
 
 @interface DJCalendarByMonthViewController : UIViewController
 
-@property (nonatomic, strong) NSMutableArray *yearMonthArr;
-@property (nonatomic, strong) NSMutableArray<NSString *> *yearArr;
-@property (nonatomic, strong) NSMutableArray<NSString *> *monthArr;
+@property (nonatomic, strong) NSDate *calendarStartDate;
+@property (nonatomic, strong) NSDate *calendarEndDate;
 
 @end

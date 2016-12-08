@@ -15,6 +15,9 @@
 @property (nonatomic, strong) UITableView *mainTableView;
 @property (nonatomic, strong) UITableView *subTableView;
 
+@property (nonatomic, strong) NSMutableArray *yearMonthArr;
+@property (nonatomic, strong) NSMutableArray<NSString *> *yearArr;
+@property (nonatomic, strong) NSMutableArray<NSString *> *monthArr;
 @property (nonatomic, strong) NSMutableArray<NSIndexPath *> *selectArr;
 
 @end

@@ -7,23 +7,16 @@
 //
 
 #import "DJCalendarViewController.h"
-#import <EventKit/EventKit.h>
-#import "FSCalendar.h"
-#import "DJCalendarWeekView.h"
+#import "DJCalendarByDateViewController.h"
 #import "DJCalendarByMonthViewController.h"
 #import "DJCalendarByYearViewController.h"
 
-@interface DJCalendarViewController ()<UIScrollViewDelegate, DJCalendarHeaderViewDelegate, FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance>
+@interface DJCalendarViewController ()<UIScrollViewDelegate, DJCalendarHeaderViewDelegate>
 
-@property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) DJCalendarHeaderView *headerView;
-@property (nonatomic, strong) FSCalendar *calendar;
+@property (nonatomic, strong) UIScrollView *scrollView;
 
-@property (strong, nonatomic) NSCalendar *gregorian;
-@property (strong, nonatomic) NSDateFormatter *dateFormatter;
-
-@property (strong, nonatomic) NSDate *minimumDate;
-@property (strong, nonatomic) NSDate *maximumDate;
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @end
 
@@ -54,6 +47,12 @@
 
 - (void)loadView
 {
+    self.dateFormatter = [[NSDateFormatter alloc] init];
+    self.dateFormatter.dateFormat = @"yyyy-M-d";
+    
+    self.calendarStartDate = [self.dateFormatter dateFromString:@"2011-1-2"];
+    self.calendarEndDate = [self.dateFormatter dateFromString:@"2016-12-31"];
+    
     UIView *view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.view = view;
@@ -76,62 +75,43 @@
 
 - (void)setupSubViewController
 {
-    /*
-     暂时的背景色
-     */
-    for (NSInteger i =0; i<4; i++) {
-        CGFloat x = i * _scrollView.bounds.size.width;
-        UIView *v = [[UIView alloc] initWithFrame:CGRectMake(x, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height)];
-        v.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:(1 - 0.2 * i)];
-        [_scrollView addSubview:v];
-    }
-    
-    //
-    DJCalendarWeekView *weekView = [[DJCalendarWeekView alloc] initWithFrame:CGRectMake(0, 0, _scrollView.bounds.size.width, 44)];
-    [_scrollView addSubview:weekView];
-    
-    // TODO:
-    FSCalendar *calendar = [[FSCalendar alloc] initWithFrame:CGRectMake(0, 40, _scrollView.bounds.size.width, _scrollView.bounds.size.height - 40)];
-    calendar.backgroundColor = [UIColor whiteColor];
-    calendar.dataSource = self;
-    calendar.delegate = self;
-    calendar.pagingEnabled = NO; // important
-    calendar.scrollDirection = FSCalendarScrollDirectionVertical;
-    calendar.headerHeight = 40;
-    calendar.weekdayHeight = 8;
-    calendar.placeholderType = FSCalendarPlaceholderTypeNone;// 隐藏非本月的日子
-    calendar.allowsMultipleSelection = YES;
+    // 设置 日Page
     {
-        calendar.appearance.adjustsFontSizeToFitContentSize = NO;
-        calendar.appearance.headerDateFormat = @"yyyy年M月";
-        calendar.appearance.headerTitleFont = [UIFont boldSystemFontOfSize:16.f];
-        calendar.appearance.headerTitleColor = UIColorFromRGB(0x79828f);
+        DJCalendarByDateViewController *byDate = [[DJCalendarByDateViewController alloc] init];
+        byDate.calendarStartDate = _calendarStartDate;
+        byDate.calendarEndDate = _calendarEndDate;
+        [self addChildViewController:byDate];
+        [byDate didMoveToParentViewController:self];
         
-        calendar.appearance.weekdayFont = [UIFont boldSystemFontOfSize:0.f];
+        CGFloat orgin_X = 0;
+        CGFloat byDateView_Width = _scrollView.bounds.size.width;
+        CGFloat screen_Width = [UIScreen mainScreen].bounds.size.width;
+        if (screen_Width == 320) {
+            orgin_X = 2.5;
+            byDateView_Width = byDateView_Width - 5.0;
+        }
+        else if (screen_Width == 375) {
+            orgin_X = 2.0;
+            byDateView_Width = byDateView_Width - 4.0;
+        }
+        else if (screen_Width == 414) {
+            orgin_X = 1.0;
+            byDateView_Width = byDateView_Width - 1.0;
+        }
+        
+        byDate.view.frame = CGRectMake(orgin_X, 0, byDateView_Width, _scrollView.bounds.size.height);
+        [_scrollView addSubview:byDate.view];
         
     }
-    calendar.firstWeekday = 2;
     
-    [_scrollView addSubview:calendar];
-    self.calendar = calendar;
+    // 设置 周Page
     
-    self.dateFormatter = [[NSDateFormatter alloc] init];
-    self.dateFormatter.dateFormat = @"yyyy-M-d";
-    
-    self.minimumDate = [self.dateFormatter dateFromString:@"2011-1-2"];
-    self.maximumDate = [self.dateFormatter dateFromString:@"2016-12-31"];
-    
-    
+
     // 设置 月Page
     {
         DJCalendarByMonthViewController * byMonth = [[DJCalendarByMonthViewController alloc] init];
-        NSArray *arr = @[
-                         @{@"2016年": @[@"12月", @"11月", @"10月", @"9月", @"8月", @"7月", @"6月", @"5月", @"4月", @"3月", @"2月", @"1月"]},
-                         @{@"2015年": @[@"12月", @"11月", @"10月", @"9月", @"8月", @"7月", @"6月", @"5月", @"4月", @"3月", @"2月", @"1月"]},
-                         @{@"2014年": @[@"12月", @"11月", @"10月", @"9月", @"8月", @"7月", @"6月", @"5月", @"4月", @"3月", @"2月", @"1月"]},
-                         @{@"2013年": @[@"12月", @"11月", @"10月", @"9月", @"8月", @"7月", @"6月", @"5月", @"4月", @"3月", @"2月", @"1月"]}
-                         ];
-        byMonth.yearMonthArr = [arr mutableCopy];
+        byMonth.calendarStartDate = _calendarStartDate;
+        byMonth.calendarEndDate = _calendarEndDate;
         [self addChildViewController:byMonth];
         [byMonth didMoveToParentViewController:self];
         byMonth.view.frame = CGRectMake(2 * _scrollView.bounds.size.width, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height);
@@ -140,22 +120,20 @@
     // 设置 年Page
     {
         DJCalendarByYearViewController * byYear = [[DJCalendarByYearViewController alloc] init];
-        NSArray *arr = @[@"2017年", @"2016年", @"2015年", @"2014年", @"2013年", @"2012年", @"2011年"];
-        byYear.yearArr = [arr mutableCopy];
+        byYear.calendarStartDate = _calendarStartDate;
+        byYear.calendarEndDate = _calendarEndDate;
         [self addChildViewController:byYear];
         [byYear didMoveToParentViewController:self];
         byYear.view.frame = CGRectMake(3 * _scrollView.bounds.size.width, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height);
         [_scrollView addSubview:byYear.view];
     }
-    
-    
 }
 
 - (void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
     
-    self.calendar.frame = CGRectMake(0, 40, _scrollView.bounds.size.width, _scrollView.bounds.size.height - 40);
+    _scrollView.frame = CGRectMake(0, 64 + _headerView.frame.size.height, self.view.bounds.size.width, self.view.bounds.size.height - 64 - _headerView.frame.size.height);
 }
 
 #pragma mark - Target Actions
@@ -181,45 +159,6 @@
     [_scrollView setContentOffset:CGPointMake(offset_X, 0) animated:YES];
 }
 
-
-#pragma mark - FSCalendarDataSource
-
-- (NSDate *)minimumDateForCalendar:(FSCalendar *)calendar
-{
-    return self.minimumDate;
-}
-
-- (NSDate *)maximumDateForCalendar:(FSCalendar *)calendar
-{
-    return self.maximumDate;
-}
-
-- (NSString *)calendar:(FSCalendar *)calendar titleForDate:(NSDate *)date
-{
-    if ([self.gregorian isDateInToday:date]) {
-        return @"今天";
-    }
-    return [[_dateFormatter stringFromDate:date] componentsSeparatedByString:@"-"].lastObject;
-}
-
-#pragma mark - FSCalendarDelegate
-
-- (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
-{
-    NSLog(@"did select %@",[self.dateFormatter stringFromDate:date]);
-}
-
-- (void)calendarCurrentPageDidChange:(FSCalendar *)calendar
-{
-    NSLog(@"did change page %@",[self.dateFormatter stringFromDate:calendar.currentPage]);
-}
-
-
-#pragma mark - FSCalendarDelegateAppearance
-- (CGFloat)calendar:(FSCalendar *)calendar appearance:(FSCalendarAppearance *)appearance borderRadiusForDate:(NSDate *)date
-{
-    return 0;
-}
 
 
 @end

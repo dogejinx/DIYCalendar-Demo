@@ -14,8 +14,7 @@ typedef void(^CallBackBlock) (NSString *text);
 @interface DJCalendarViewController : UIViewController
 
 @property (nonatomic, copy) CallBackBlock callBackBlock;
-
-
-
+@property (nonatomic, strong) NSDate *calendarStartDate;
+@property (nonatomic, strong) NSDate *calendarEndDate;
 
 @end
