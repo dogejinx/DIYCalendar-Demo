@@ -40,6 +40,7 @@
 		765802CA1DF40A4E00EAE6FF /* FSCalendarStickyHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802BA1DF40A4E00EAE6FF /* FSCalendarStickyHeader.m */; };
 		765802CB1DF40A4E00EAE6FF /* FSCalendarWeekdayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802BC1DF40A4E00EAE6FF /* FSCalendarWeekdayView.m */; };
 		765802CE1DF416DD00EAE6FF /* DJCalendarHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802CD1DF416DD00EAE6FF /* DJCalendarHeaderView.m */; };
+		765802D21DF9C67800EAE6FF /* DIYCalendarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802D11DF9C67800EAE6FF /* DIYCalendarCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,6 +128,8 @@
 		765802CC1DF416DD00EAE6FF /* DJCalendarHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarHeaderView.h; sourceTree = "<group>"; };
 		765802CD1DF416DD00EAE6FF /* DJCalendarHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarHeaderView.m; sourceTree = "<group>"; };
 		765802CF1DF42BBD00EAE6FF /* DIYCalendar-Demo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DIYCalendar-Demo-Prefix.pch"; sourceTree = "<group>"; };
+		765802D01DF9C67800EAE6FF /* DIYCalendarCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DIYCalendarCell.h; sourceTree = "<group>"; };
+		765802D11DF9C67800EAE6FF /* DIYCalendarCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DIYCalendarCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +209,8 @@
 				7636BAC81DF811780070487E /* DJCalendarMainTableViewCell.m */,
 				7636BACA1DF811900070487E /* DJCalendarSubTableViewCell.h */,
 				7636BACB1DF811900070487E /* DJCalendarSubTableViewCell.m */,
+				765802D01DF9C67800EAE6FF /* DIYCalendarCell.h */,
+				765802D11DF9C67800EAE6FF /* DIYCalendarCell.m */,
 			);
 			name = Cell;
 			sourceTree = "<group>";
@@ -487,6 +492,7 @@
 				765802CA1DF40A4E00EAE6FF /* FSCalendarStickyHeader.m in Sources */,
 				765802C71DF40A4E00EAE6FF /* FSCalendarExtensions.m in Sources */,
 				765802C31DF40A4E00EAE6FF /* FSCalendarCollectionView.m in Sources */,
+				765802D21DF9C67800EAE6FF /* DIYCalendarCell.m in Sources */,
 				7636BACC1DF811900070487E /* DJCalendarSubTableViewCell.m in Sources */,
 				7636BAC31DF7EC1E0070487E /* DJCalendarConstants.m in Sources */,
 				765802C01DF40A4E00EAE6FF /* FSCalendarAppearance.m in Sources */,

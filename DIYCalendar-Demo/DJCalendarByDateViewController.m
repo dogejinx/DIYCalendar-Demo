@@ -10,9 +10,8 @@
 #import "DJCalendarHeaderView.h"
 #import <EventKit/EventKit.h>
 #import "FSCalendar.h"
+#import "DIYCalendarCell.h"
 #import "DJCalendarWeekView.h"
-#import "DJCalendarByMonthViewController.h"
-#import "DJCalendarByYearViewController.h"
 
 @interface DJCalendarByDateViewController ()<FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance>
 
@@ -63,6 +62,7 @@
         calendar.appearance.headerTitleColor = UIColorFromRGB(0x79828f);
         
         calendar.appearance.weekdayFont = [UIFont boldSystemFontOfSize:0.f];
+        [calendar registerClass:[DIYCalendarCell class] forCellReuseIdentifier:@"DIYCalendarCell"];
         
     }
     calendar.firstWeekday = 2;
@@ -104,6 +104,17 @@
     return numberStr;
 }
 
+- (FSCalendarCell *)calendar:(FSCalendar *)calendar cellForDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
+{
+    DIYCalendarCell *cell = [calendar dequeueReusableCellWithIdentifier:@"DIYCalendarCell" forDate:date atMonthPosition:monthPosition];
+    return cell;
+}
+
+- (void)calendar:(FSCalendar *)calendar willDisplayCell:(FSCalendarCell *)cell forDate:(NSDate *)date atMonthPosition: (FSCalendarMonthPosition)monthPosition
+{
+    [self configureCell:cell forDate:date atMonthPosition:monthPosition];
+}
+
 #pragma mark - FSCalendarDelegate
 
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
@@ -143,8 +154,15 @@
 
 - (void)configureCell:(FSCalendarCell *)cell forDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
+    
+    DIYCalendarCell *diyCell = (DIYCalendarCell *)cell;
+    
+    diyCell.todayView.hidden = ![self.gregorian isDateInToday:date];
+    
     // Configure selection layer
     if (monthPosition == FSCalendarMonthPositionCurrent || self.calendar.scope == FSCalendarScopeWeek) {
+        
+        diyCell.eventIndicator.hidden = YES;
         
         SelectionType selectionType = SelectionTypeNone;
         if ([self.calendar.selectedDates containsObject:date]) {
@@ -164,16 +182,24 @@
         } else {
             selectionType = SelectionTypeNone;
         }
-    
-        cell.selectionType = selectionType;
+        
+        if (selectionType == SelectionTypeNone) {
+            diyCell.selectionLayer.hidden = YES;
+            return;
+        }
+        
+        diyCell.selectionLayer.hidden = NO;
+        diyCell.selectionType = selectionType;
         
         
     } else if (monthPosition == FSCalendarMonthPositionNext || monthPosition == FSCalendarMonthPositionPrevious) {
         
+        diyCell.todayView.hidden = YES;
+        diyCell.selectionLayer.hidden = YES;
+        diyCell.eventIndicator.hidden = YES; // Hide default event indicator
         if ([self.calendar.selectedDates containsObject:date]) {
-            cell.titleLabel.textColor = self.calendar.appearance.titlePlaceholderColor; // Prevent placeholders from changing text color
+            diyCell.titleLabel.textColor = self.calendar.appearance.titlePlaceholderColor; // Prevent placeholders from changing text color
         }
     }
 }
-
 @end
