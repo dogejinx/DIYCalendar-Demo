@@ -41,7 +41,7 @@ UIKIT_EXTERN NSString * const FSCalendarInvalidArgumentsExceptionName;
 #define FSCalendarDeviceIsIPad [[UIDevice currentDevice].model hasPrefix:@"iPad"]
 #endif
 
-#define FSCalendarStandardSelectionColor   FSColorRGBA(31,119,219,1.0)
+#define FSCalendarStandardSelectionColor   UIColorFromRGB(0x3897f0)
 #define FSCalendarStandardTodayColor       FSColorRGBA(198,51,42 ,1.0)
 #define FSCalendarStandardTitleTextColor   FSColorRGBA(14,69,221 ,1.0)
 #define FSCalendarStandardEventDotColor    FSColorRGBA(31,119,219,0.75)

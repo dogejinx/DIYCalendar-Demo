@@ -59,7 +59,7 @@
                 
             case FSCalendarScopeMonth: {
                 
-                CGFloat columnWidth = self.collectionView.fs_width/7.0-(self.scrollDirection == UICollectionViewScrollDirectionVertical)*0.1;
+                CGFloat columnWidth = floorf(self.collectionView.fs_width/7.0);
                 CGSize itemSize = CGSizeMake(columnWidth,rowHeight);
                 self.itemSize = itemSize;
                 
@@ -67,7 +67,7 @@
             }
             case FSCalendarScopeWeek: {
                 
-                CGSize itemSize = CGSizeMake(self.collectionView.fs_width/7.0, rowHeight);
+                CGSize itemSize = CGSizeMake(floorf(self.collectionView.fs_width/7.0), rowHeight);
                 self.itemSize = itemSize;
                 
                 break;
@@ -80,7 +80,7 @@
         CGFloat headerHeight = self.calendar.preferredWeekdayHeight*1.5+self.calendar.preferredHeaderHeight;
         self.headerReferenceSize = CGSizeMake(self.collectionView.fs_width, headerHeight);
         
-        CGFloat columnWidth = self.collectionView.fs_width/7.0-(self.scrollDirection == UICollectionViewScrollDirectionVertical)*0.1;
+        CGFloat columnWidth = self.collectionView.fs_width/7.0;
         
         CGSize itemSize = CGSizeMake(columnWidth,rowHeight);
         self.itemSize = itemSize;

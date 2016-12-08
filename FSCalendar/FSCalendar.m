@@ -1019,7 +1019,8 @@ typedef NS_ENUM(NSUInteger, FSCalendarOrientation) {
         if (!self.floatingMode) {
             _preferredRowHeight = (contentHeight-padding*2)/6.0;
         } else {
-            _preferredRowHeight = FSCalendarStandardRowHeight*MAX(1, FSCalendarDeviceIsIPad*1.5)*_lineHeightMultiplier;
+            CGFloat cell_H = floorf(self.bounds.size.width/7);
+            _preferredRowHeight = cell_H*MAX(1, FSCalendarDeviceIsIPad*1.5)*_lineHeightMultiplier;
         }
     }
     return _preferredRowHeight;
