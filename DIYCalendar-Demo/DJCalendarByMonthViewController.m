@@ -31,8 +31,10 @@
     
     for (NSInteger i=0; i<_yearMonthArr.count; i++) {
         NSDictionary *dic = _yearMonthArr[i];
-        for (NSInteger j=0; j<dic.allValues.count; j++) {
-            [_monthArr addObject:dic.allValues[j]];
+        NSArray *tempArr = dic.allValues;
+        NSArray *valuesArr = tempArr.firstObject;
+        for (NSInteger j=0; j<valuesArr.count; j++) {
+            [_monthArr addObject:valuesArr[j]];
         }
     }
     
@@ -74,7 +76,7 @@
         [subTableView registerClass:[DJCalendarSubTableViewCell class] forCellReuseIdentifier:@"DJCalendarSubTableViewCell"];
         
         [view addSubview:subTableView];
-        self.mainTableView = subTableView;
+        self.subTableView = subTableView;
     }
     
 }
@@ -102,6 +104,8 @@
         DJCalendarMainTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DJCalendarMainTableViewCell" forIndexPath:indexPath];
         
         cell.calendarLabel.text = _yearArr[indexPath.row];
+        
+        
         if ([_selectArr containsObject:indexPath]) {
             cell.choose = YES;
         }
