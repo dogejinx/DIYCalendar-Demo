@@ -54,7 +54,13 @@
     calendar.headerHeight = 34;
     calendar.weekdayHeight = 6;
     calendar.placeholderType = FSCalendarPlaceholderTypeNone;// 隐藏非本月的日子
-    calendar.allowsMultipleSelection = YES;
+    if (_chooseType == DJChooseTypeSingle) {
+        calendar.allowsMultipleSelection = NO;
+    }
+    else if (_chooseType == DJChooseTypeMuti) {
+        calendar.allowsMultipleSelection = YES;
+    }
+    
     {
         calendar.appearance.adjustsFontSizeToFitContentSize = NO;
         calendar.appearance.headerDateFormat = @"yyyy年M月";
@@ -119,13 +125,14 @@
 
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
-//    NSLog(@"did select %@",[self.dateFormatter stringFromDate:date]);
+    NSLog(@"did select date");
     [self configureVisibleCells];
+//    [self clickAction];
 }
 
 - (void)calendar:(FSCalendar *)calendar didDeselectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
-//    NSLog(@"did deselect date %@",[self.dateFormatter stringFromDate:date]);
+    NSLog(@"did deselect date");
     [self configureVisibleCells];
 }
 
@@ -202,4 +209,52 @@
         }
     }
 }
+
+- (void)clickAction
+{
+    if (_chooseType == DJChooseTypeSingle) {
+        if (!_calendar.selectedDate) {
+            // TODO:
+            return;
+        }
+        
+        [self submitDate];
+    }
+    else {
+
+        
+        if (_calendar.selectedDates.count >=2) {
+            [self submitDate];
+        }
+    }
+
+}
+
+- (void)submitDate
+{
+    if (_chooseType == DJChooseTypeSingle) {
+        if (_calendar.selectedDate) {
+            NSDate *date = _calendar.selectedDate;
+            NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+            
+            NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
+            NSString *endDateString = startDateString;
+            NSString *labelString = [NSString stringWithFormat:@"%zd年%zd月%zd日", startComponents.year, startComponents.month, startComponents.day];
+            _fatherVC.callBackBlock(_chooseType, DJCalendarTypeDay, startDateString, endDateString, labelString);
+            [_fatherVC dismissViewControllerAnimated:YES completion:nil];
+        }
+    }
+    else if (_chooseType == DJChooseTypeSingle) {
+        if (_calendar.selectedDates.count>1) {
+            
+            NSString *startDateString = @"20161201";
+            NSString *endDateString = @"20161207";
+            NSString *labelString = @"12月1号-12月7号";
+            _fatherVC.callBackBlock(_chooseType, DJCalendarTypeDay, startDateString, endDateString, labelString);
+            
+        }
+    }
+}
+
+
 @end

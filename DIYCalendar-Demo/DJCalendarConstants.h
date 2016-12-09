@@ -15,7 +15,14 @@
 #define DJCalendarEventDotColor                 UIColorFromRGB(0xaeb4bc)
 #define DJCalendarSelectFillColor               UIColorFromRGB(0x3897f0)
 
-typedef NS_ENUM(NSUInteger, ChooseType) {
-    ChooseTypeSingle,
-    ChooseTypeMuti
+typedef NS_ENUM(NSUInteger, DJChooseType) {
+    DJChooseTypeSingle,
+    DJChooseTypeMuti
+};
+
+typedef NS_ENUM(NSUInteger, DJCalendarType) {
+    DJCalendarTypeDay,
+    DJCalendarTypeWeek,
+    DJCalendarTypeMonth,
+    DJCalendarTypeYear
 };

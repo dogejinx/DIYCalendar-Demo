@@ -8,11 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "DJCalendarConstants.h"
+#import "DJCalendarViewController.h"
 
 @interface DJCalendarByWeekViewController : UIViewController
-
+@property (nonatomic, weak) DJCalendarViewController *fatherVC;
 @property (nonatomic, strong) NSDate *calendarStartDate;
 @property (nonatomic, strong) NSDate *calendarEndDate;
 
-@property (nonatomic, assign) ChooseType chooseType;
+@property (nonatomic, assign) DJChooseType chooseType;
 @end

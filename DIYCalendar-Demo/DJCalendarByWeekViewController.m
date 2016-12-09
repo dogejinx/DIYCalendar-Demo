@@ -22,7 +22,7 @@
 
 @end
 
-
+//gregorian
 @interface DJCalendarByWeekViewController ()<UITableViewDelegate, UITableViewDataSource, UIScrollViewDelegate>
 
 @property (nonatomic, strong) UITableView *mainTableView;// left tableview
@@ -32,7 +32,7 @@
 @property (nonatomic, assign) NSInteger mainTableViewCurrentRow;
 @property (nonatomic, strong) NSMutableArray<NSIndexPath *> *selectArr;
 
-@property (nonatomic, strong) NSCalendar *calendar;
+@property (nonatomic, strong) NSCalendar *gregorian;
 @property (nonatomic, assign) CGFloat headerHeight;
 
 @end
@@ -71,7 +71,7 @@
     
     {
         UITableView *subTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-        subTableView.backgroundColor = [UIColor whiteColor];
+        subTableView.backgroundColor = UIColorFromRGB(0xf6f6f6);
         subTableView.tag = 22;
         subTableView.rowHeight = 45.f;
         subTableView.delegate = self;
@@ -87,7 +87,7 @@
 
 - (void)viewDidLayoutSubviews
 {
-    _mainTableView.frame = CGRectMake(0, 0, 100, self.view.bounds.size.height);
+    _mainTableView.frame = CGRectMake(0, 0, 88, self.view.bounds.size.height);
     _subTableView.frame = CGRectMake(_mainTableView.bounds.size.width, 0, self.view.bounds.size.width - _mainTableView.bounds.size.width, self.view.bounds.size.height);
 }
 
@@ -96,8 +96,9 @@
     self.selectArr = [NSMutableArray array];
     self.weekDataArr = [NSMutableArray array];
     
-    self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    _calendar.firstWeekday = 2;
+    self.gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    _gregorian.firstWeekday = 2;
+    _gregorian.minimumDaysInFirstWeek = 4;
     self.headerHeight = 30.f;
     self.mainTableViewCurrentRow = 0;
 }
@@ -151,15 +152,28 @@
         NSDateComponents *dateComponentsAsTimeQantum = [[NSDateComponents alloc] init];
         [dateComponentsAsTimeQantum setDay:6];
         // 在当前历法下，获取6天后的时间点
-        NSDate *secondDate = [_calendar dateByAddingComponents:dateComponentsAsTimeQantum toDate:firstDate options:0];
+        NSDate *secondDate = [_gregorian dateByAddingComponents:dateComponentsAsTimeQantum toDate:firstDate options:0];
         
-        NSDateComponents *fComponents = [_calendar components:NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:firstDate];
-        NSDateComponents *sComponents = [_calendar components:NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:secondDate];
+        NSDateComponents *fComponents = [_gregorian components:NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:firstDate];
+        NSDateComponents *sComponents = [_gregorian components:NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:secondDate];
         
         NSString *firstStr = [NSString stringWithFormat:@"第%zd周", fComponents.weekOfYear];
-        NSString *secondStr = [NSString stringWithFormat:@"(%zd月%zd日-%zd月%zd日)", fComponents.month, fComponents.day, sComponents.month, sComponents.day];
+        NSString *secondStr = [NSString stringWithFormat:@" (%zd月%zd日-%zd月%zd日)", fComponents.month, fComponents.day, sComponents.month, sComponents.day];
+        if ([self isInWeekend:firstDate]) {
+            secondStr = [secondStr stringByAppendingString:@" 本周"];
+        }
         
-        cell.calendarLabel.text = [NSString stringWithFormat:@"%@%@", firstStr, secondStr];
+        NSString *finalStr = [firstStr stringByAppendingString:secondStr];
+        
+        NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc]initWithString:finalStr];
+        
+        [attrStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:15.0f] range:NSMakeRange(0, firstStr.length)];
+        [attrStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:13.0f] range:NSMakeRange(firstStr.length, secondStr.length)];
+        
+        [attrStr addAttribute:NSForegroundColorAttributeName value:UIColorFromRGB(0x79828f) range:NSMakeRange(0, firstStr.length + secondStr.length)];
+        
+        cell.calendarLabel.attributedText = attrStr;
+        [cell.calendarLabel sizeToFit];
         
         if ([_selectArr containsObject:indexPath]) {
             cell.choose = YES;
@@ -178,7 +192,12 @@
         return 0;
     }
     else {
-        return _headerHeight;
+        if (section==0) {
+            return 0.0;
+        }
+        else {
+            return _headerHeight;
+        }
     }
     
 }
@@ -203,22 +222,26 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (tableView.tag == 11) {
-        
         _mainTableViewCurrentRow = indexPath.row;
         NSIndexPath *path = [NSIndexPath indexPathForRow:0 inSection:indexPath.row];
         [_subTableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
     else {
-        if (![_selectArr containsObject:indexPath]) {
-            [_selectArr addObject:indexPath];
-        }
-        else {
-            [_selectArr removeObject:indexPath];
-        }
-        
+        [self clickAction:indexPath];
+        [tableView reloadData];
     }
+}
+
+
+- (BOOL)isInWeekend:(NSDate *)date
+{
+    NSDateComponents *dateComponents = [_gregorian components:NSCalendarUnitWeekOfYear | NSCalendarUnitYearForWeekOfYear fromDate:date];
+    NSDateComponents *currentComponents = [_gregorian components:NSCalendarUnitWeekOfYear | NSCalendarUnitYearForWeekOfYear fromDate:[NSDate date]];
     
-    [tableView reloadData];
+    if (dateComponents.weekOfYear == currentComponents.weekOfYear && dateComponents.yearForWeekOfYear == currentComponents.yearForWeekOfYear) {
+        return YES;
+    }
+    return NO;
 }
 
 - (void)initWeekDataArr
@@ -231,8 +254,8 @@
             endDate = _calendarStartDate;
         }
         
-        NSDateComponents *startDateComponents = [_calendar components:NSCalendarUnitMonth | NSCalendarUnitWeekOfYear | NSCalendarUnitYearForWeekOfYear fromDate:startDate];
-        NSDateComponents *endDateComponents = [_calendar components:NSCalendarUnitMonth | NSCalendarUnitWeekOfYear | NSCalendarUnitYearForWeekOfYear fromDate:endDate];
+        NSDateComponents *startDateComponents = [_gregorian components:NSCalendarUnitMonth | NSCalendarUnitWeekOfYear | NSCalendarUnitYearForWeekOfYear fromDate:startDate];
+        NSDateComponents *endDateComponents = [_gregorian components:NSCalendarUnitMonth | NSCalendarUnitWeekOfYear | NSCalendarUnitYearForWeekOfYear fromDate:endDate];
         
         NSMutableArray *yearArr = [NSMutableArray array];
         for (NSInteger i=endDateComponents.yearForWeekOfYear; i>=startDateComponents.yearForWeekOfYear; i--) {
@@ -242,7 +265,13 @@
             
             NSInteger weekCountMax = endDateComponents.weekOfYear;
             if (i<endDateComponents.yearForWeekOfYear) {
-                weekCountMax = 52;
+                NSDateComponents *dateComponentsForLastDay = [[NSDateComponents alloc] init];
+                [dateComponentsForLastDay setDay:28];
+                [dateComponentsForLastDay setMonth:12];
+                [dateComponentsForLastDay setYear:i];
+                NSDate *dateFromDateComponentsForLastDate = [_gregorian dateFromComponents:dateComponentsForLastDay];
+                NSDateComponents *dateComponents = [_gregorian components:NSCalendarUnitWeekOfYear fromDate:dateFromDateComponentsForLastDate];
+                weekCountMax = dateComponents.weekOfYear;
             }
             NSInteger weekCountMin = endDateComponents.weekOfYear;
             if (i>startDateComponents.yearForWeekOfYear) {
@@ -253,12 +282,14 @@
                 NSDateComponents *dateComponentsForDate = [[NSDateComponents alloc] init];
                 [dateComponentsForDate setWeekday:2];
                 [dateComponentsForDate setWeekOfYear:j];
-                [dateComponentsForDate setYear:i];
-                NSDate *dateFromDateComponentsForDate = [_calendar dateFromComponents:dateComponentsForDate];
+                [dateComponentsForDate setYearForWeekOfYear:i];
+                NSDate *dateFromDateComponentsForDate = [_gregorian dateFromComponents:dateComponentsForDate];
                 [obj.weekArr addObject:dateFromDateComponentsForDate];
                 
             }
-            [yearArr addObject:obj];
+            if (obj.weekArr.count > 0) {
+                [yearArr addObject:obj];
+            }
         }
         _weekDataArr = yearArr;
     }
@@ -272,8 +303,74 @@
         NSArray* indexPathArr = [tableView indexPathsForVisibleRows];
         NSIndexPath *path = indexPathArr.firstObject;
         _mainTableViewCurrentRow = path.section;
-        NSLog(@"_mainTableViewCurrentRow: %zd", _mainTableViewCurrentRow);
         [_mainTableView reloadData];
+    }
+}
+
+- (void)clickAction:(NSIndexPath *)indexPath {
+    if (_chooseType == DJChooseTypeSingle) {
+        if (_selectArr.count >= 1) {
+            return;
+        }
+        
+        [_selectArr addObject:indexPath];
+        [self submitDate];
+    }
+    else {
+        if (_selectArr.count >= 2) {
+            return;
+        }
+        
+        if (![_selectArr containsObject:indexPath]) {
+            [_selectArr addObject:indexPath];
+        }
+        else {
+            [_selectArr removeObject:indexPath];
+        }
+        if (_selectArr.count >=2) {
+            [self submitDate];
+        }
+    }
+}
+
+- (void)submitDate
+{
+    if (_chooseType == DJChooseTypeSingle) {
+        NSIndexPath *indexPath = _selectArr.firstObject;
+        DJCalendarWeekDataObject *obj = _weekDataArr[indexPath.section];
+        
+        NSDate *date = obj.weekArr[indexPath.row];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+        
+        NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
+        NSString *endDateString = startDateString;
+        NSString *labelString = [NSString stringWithFormat:@"%zd月%zd号-%zd月%zd号/%zd年", startComponents.month, startComponents.day, startComponents.month, startComponents.day, startComponents.year];
+        _fatherVC.callBackBlock(_chooseType, DJCalendarTypeWeek, startDateString, endDateString, labelString);
+        [_fatherVC dismissViewControllerAnimated:YES completion:nil];
+    }
+    else if (_chooseType == DJChooseTypeMuti) {
+        NSIndexPath *startIndexPath = _selectArr.firstObject;
+        NSIndexPath *endIndexPath = _selectArr.lastObject;
+        
+        DJCalendarWeekDataObject *startObj = _weekDataArr[startIndexPath.section];
+        DJCalendarWeekDataObject *endObj = _weekDataArr[endIndexPath.section];
+        
+        NSDate *startDate = startObj.weekArr[startIndexPath.row];
+        NSDate *endDate = endObj.weekArr[endIndexPath.row];
+        if ([startDate timeIntervalSinceDate:endDate] > 0) {
+            startDate = endObj.weekArr[endIndexPath.row];
+            endDate = startObj.weekArr[startIndexPath.row];
+        }
+        
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:startDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:endDate];
+        
+        NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
+        NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",endComponents.year, endComponents.month, endComponents.day];
+        NSString *labelString = [NSString stringWithFormat:@"第%zd周-第%zd周", startComponents.weekOfYear, endComponents.weekOfYear];
+        
+        _fatherVC.callBackBlock(_chooseType, DJCalendarTypeWeek, startDateString, endDateString, labelString);
+        [_fatherVC dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

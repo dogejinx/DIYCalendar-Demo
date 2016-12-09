@@ -40,12 +40,11 @@
     [super layoutSubviews];
     
     self.backgroundView.frame = self.bounds;
-    //    NSLog(@"cell_bounds: (%0.f, %0.f, %0.f, %0.f)",self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, self.bounds.size.height);
-    //    NSLog(@"cell_frame: (%0.f, %0.f, %0.f, %0.f)",self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
+   
     self.todayView.frame = self.backgroundView.frame;
     
     self.selectionLayer.frame = self.bounds;
-    NSLog(@"selectionLayer_frame: (%0.f, %0.f, %0.f, %0.f)",_selectionLayer.frame.origin.x, _selectionLayer.frame.origin.y, _selectionLayer.frame.size.width, _selectionLayer.frame.size.height);
+   
     if (self.selectionType == SelectionTypeMiddle) {
         
         self.selectionLayer.fillColor = UIColorFromRGB(0x73b6f4).CGColor;

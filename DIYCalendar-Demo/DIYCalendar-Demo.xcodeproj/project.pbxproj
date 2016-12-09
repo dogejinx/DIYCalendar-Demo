@@ -325,10 +325,9 @@
 			children = (
 				7658029C1DF409FA00EAE6FF /* DJCalendarViewController.h */,
 				7658029D1DF409FA00EAE6FF /* DJCalendarViewController.m */,
-				765802CC1DF416DD00EAE6FF /* DJCalendarHeaderView.h */,
-				765802CD1DF416DD00EAE6FF /* DJCalendarHeaderView.m */,
 				7636BAC11DF7EC1E0070487E /* DJCalendarConstants.h */,
 				7636BAC21DF7EC1E0070487E /* DJCalendarConstants.m */,
+				765802E01DFA2B5600EAE6FF /* SegmentHeaderView */,
 				765802D91DF9F2EF00EAE6FF /* TableViewHeader */,
 				7636BACD1DF811970070487E /* Cell */,
 				7636BAC01DF7E7460070487E /* WeekView */,
@@ -347,6 +346,15 @@
 				765802DE1DF9F38900EAE6FF /* DJTableViewHeader.m */,
 			);
 			name = TableViewHeader;
+			sourceTree = "<group>";
+		};
+		765802E01DFA2B5600EAE6FF /* SegmentHeaderView */ = {
+			isa = PBXGroup;
+			children = (
+				765802CC1DF416DD00EAE6FF /* DJCalendarHeaderView.h */,
+				765802CD1DF416DD00EAE6FF /* DJCalendarHeaderView.m */,
+			);
+			name = SegmentHeaderView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
