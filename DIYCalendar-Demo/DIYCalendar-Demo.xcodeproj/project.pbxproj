@@ -43,6 +43,7 @@
 		765802D21DF9C67800EAE6FF /* DIYCalendarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802D11DF9C67800EAE6FF /* DIYCalendarCell.m */; };
 		765802DF1DF9F38900EAE6FF /* DJTableViewHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802DE1DF9F38900EAE6FF /* DJTableViewHeader.m */; };
 		765802E31DFAB75F00EAE6FF /* DJToastView.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802E21DFAB75F00EAE6FF /* DJToastView.m */; };
+		765802E71DFC333600EAE6FF /* DJCalendarObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 765802E61DFC333600EAE6FF /* DJCalendarObject.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,6 +137,8 @@
 		765802DE1DF9F38900EAE6FF /* DJTableViewHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJTableViewHeader.m; sourceTree = "<group>"; };
 		765802E11DFAB75F00EAE6FF /* DJToastView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJToastView.h; sourceTree = "<group>"; };
 		765802E21DFAB75F00EAE6FF /* DJToastView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJToastView.m; sourceTree = "<group>"; };
+		765802E51DFC333600EAE6FF /* DJCalendarObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DJCalendarObject.h; sourceTree = "<group>"; };
+		765802E61DFC333600EAE6FF /* DJCalendarObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DJCalendarObject.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -330,6 +333,8 @@
 				7658029D1DF409FA00EAE6FF /* DJCalendarViewController.m */,
 				7636BAC11DF7EC1E0070487E /* DJCalendarConstants.h */,
 				7636BAC21DF7EC1E0070487E /* DJCalendarConstants.m */,
+				765802E51DFC333600EAE6FF /* DJCalendarObject.h */,
+				765802E61DFC333600EAE6FF /* DJCalendarObject.m */,
 				765802E41DFAB76500EAE6FF /* Toast */,
 				765802E01DFA2B5600EAE6FF /* SegmentHeaderView */,
 				765802D91DF9F2EF00EAE6FF /* TableViewHeader */,
@@ -518,6 +523,7 @@
 				765802C21DF40A4E00EAE6FF /* FSCalendarCell.m in Sources */,
 				765802C51DF40A4E00EAE6FF /* FSCalendarConstants.m in Sources */,
 				7636BAB51DF7B7EC0070487E /* DJCalendarByMonthViewController.m in Sources */,
+				765802E71DFC333600EAE6FF /* DJCalendarObject.m in Sources */,
 				765802C61DF40A4E00EAE6FF /* FSCalendarDelegateProxy.m in Sources */,
 				7658029E1DF409FA00EAE6FF /* DJCalendarViewController.m in Sources */,
 				765802C81DF40A4E00EAE6FF /* FSCalendarHeaderView.m in Sources */,

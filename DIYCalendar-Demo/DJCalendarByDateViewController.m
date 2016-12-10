@@ -35,7 +35,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [_calendar reloadData];
+//    [_calendar reloadData];
 }
 
 - (void)loadView
@@ -100,6 +100,13 @@
     _bottomToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(self.view.bounds) - 60);
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [_calendar reloadData];
+}
+
 - (void)addToastView
 {
     DJToastView *mToast = [[DJToastView alloc] initWithFrame:CGRectZero];
@@ -138,14 +145,24 @@
 
 - (UIColor *)calendar:(FSCalendar *)calendar appearance:(FSCalendarAppearance *)appearance titleDefaultColorForDate:(NSDate *)date
 {
-    if ([self.gregorian isDateInToday:date]) {
-        return UIColorFromRGB(0xf54242);
+    if ([date compare:_calendar.minimumDate] >= 0 && [date compare:_calendar.maximumDate] <= 0) {
+        if ([self isBetweenRangeOfSelected:date]) {
+            return [UIColor whiteColor];
+        }
+        
+        if ([self.gregorian isDateInToday:date]) {
+            return UIColorFromRGB(0xf54242);
+        }
+        
+        NSDateComponents *dateComponents = [_gregorian components:NSCalendarUnitWeekday fromDate:date];
+        if (dateComponents.weekday == 1 || dateComponents.weekday == 7) {
+            return UIColorFromRGB(0x3897f0);
+        }
+        return _calendar.appearance.titleDefaultColor;
     }
-    NSDateComponents *dateComponents = [_gregorian components:NSCalendarUnitWeekday fromDate:date];
-    if (dateComponents.weekday == 1 || dateComponents.weekday == 7) {
-        return UIColorFromRGB(0x3897f0);
+    else {
+        return _calendar.appearance.titlePlaceholderColor;
     }
-    return _calendar.appearance.titleDefaultColor;
 }
 
 - (FSCalendarCell *)calendar:(FSCalendar *)calendar cellForDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
@@ -222,37 +239,16 @@
     
     // Configure selection layer
     if (monthPosition == FSCalendarMonthPositionCurrent || self.calendar.scope == FSCalendarScopeWeek) {
-        
         diyCell.eventIndicator.hidden = YES;
         
         SelectionType selectionType = SelectionTypeNone;
         
-        if (self.calendar.selectedDates.count == 0) {
-            
-        }
-        else if (self.calendar.selectedDates.count == 1) {
-            
-        }
-        else if (self.calendar.selectedDates.count == 2) {
-            
-        }
-        
         if ([self.calendar.selectedDates containsObject:date]) {
-            NSDate *previousDate = [self.gregorian dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:date options:0];
-            NSDate *nextDate = [self.gregorian dateByAddingUnit:NSCalendarUnitDay value:1 toDate:date options:0];
-            if ([self.calendar.selectedDates containsObject:date]) {
-                if ([self.calendar.selectedDates containsObject:previousDate] && [self.calendar.selectedDates containsObject:nextDate]) {
-                    selectionType = SelectionTypeMiddle;
-                } else if ([self.calendar.selectedDates containsObject:previousDate] && [self.calendar.selectedDates containsObject:date]) {
-                    selectionType = SelectionTypeRightBorder;
-                } else if ([self.calendar.selectedDates containsObject:nextDate]) {
-                    selectionType = SelectionTypeLeftBorder;
-                } else {
-                    selectionType = SelectionTypeSingle;
-                }
-            }
+            selectionType = SelectionTypeSingle;
         } else {
-            selectionType = SelectionTypeNone;
+            if ([self isBetweenRangeOfSelected:date]) {
+                selectionType = SelectionTypeMiddle;
+            }
         }
         
         if (selectionType == SelectionTypeNone) {
@@ -262,8 +258,7 @@
         
         diyCell.selectionLayer.hidden = NO;
         diyCell.selectionType = selectionType;
-        
-        
+    
     } else if (monthPosition == FSCalendarMonthPositionNext || monthPosition == FSCalendarMonthPositionPrevious) {
         
         diyCell.todayView.hidden = YES;
@@ -307,6 +302,7 @@
 
 - (void)submitDate
 {
+    [_calendar reloadData];
     if (_chooseType == DJChooseTypeSingle) {
         if (_calendar.selectedDate) {
             NSDate *date = _calendar.selectedDate;
@@ -315,7 +311,15 @@
             NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
             NSString *endDateString = startDateString;
             NSString *labelString = [NSString stringWithFormat:@"%zd年%zd月%zd日", startComponents.year, startComponents.month, startComponents.day];
-            _fatherVC.callBackBlock(_chooseType, DJCalendarTypeDay, startDateString, endDateString, labelString);
+            
+            DJCalendarObject *obj = [[DJCalendarObject alloc] init];
+            obj.calendarType = DJCalendarTypeDay;
+            obj.minDateStr = startDateString;
+            obj.maxDateStr = endDateString;
+            obj.minDate = date;
+            obj.maxDate = date;
+            
+            _fatherVC.callBackBlock(_chooseType, obj, labelString);
             [_fatherVC dismissViewController];
         }
     }
@@ -334,7 +338,14 @@
         NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",endComponents.year, endComponents.month, endComponents.day];
         NSString *labelString = [NSString stringWithFormat:@"%zd月%zd日-%zd月%zd日", startComponents.month,startComponents.day, endComponents.month, endComponents.day];
         
-        _fatherVC.callBackBlock(_chooseType, DJCalendarTypeDay, startDateString, endDateString, labelString);
+        DJCalendarObject *obj = [[DJCalendarObject alloc] init];
+        obj.calendarType = DJCalendarTypeDay;
+        obj.minDateStr = startDateString;
+        obj.maxDateStr = endDateString;
+        obj.minDate = startDate;
+        obj.maxDate = endDate;
+        
+        _fatherVC.callBackBlock(_chooseType, obj, labelString);
         [_fatherVC dismissViewController];
     }
 }
@@ -356,6 +367,31 @@
         return  YES;
     }
     return NO;
+}
+
+- (BOOL)isBetweenRangeOfSelected:(NSDate *)date
+{
+    if (_calendar.selectedDates.count < 2) {
+        return NO;
+    }
+    
+    NSDate *dateX = _calendar.selectedDates.firstObject;
+    NSDate *dateY = _calendar.selectedDates.lastObject;
+    
+    NSDateComponents *dateFromX = [_gregorian components:NSCalendarUnitDay fromDate:date toDate:dateX options:0];
+    NSDateComponents *dateFromY = [_gregorian components:NSCalendarUnitDay fromDate:date toDate:dateY options:0];
+    NSDateComponents *xFromY = [_gregorian components:NSCalendarUnitDay fromDate:dateX toDate:dateY options:0];
+    
+    NSInteger d_X = labs(dateFromX.day);
+    NSInteger d_Y = labs(dateFromY.day);
+    NSInteger x_Y = labs(xFromY.day);
+    
+    if (d_X + d_Y == x_Y) {
+        return YES;
+    }
+    else {
+        return NO;
+    }
 }
 
 @end

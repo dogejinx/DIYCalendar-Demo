@@ -207,7 +207,15 @@
         NSString *startDateString = [NSString stringWithFormat:@"%zd",startComponents.year];
         NSString *endDateString = startDateString;
         NSString *labelString = [NSString stringWithFormat:@"%zd年", startComponents.year];
-        _fatherVC.callBackBlock(_chooseType, DJCalendarTypeYear, startDateString, endDateString, labelString);
+        
+        DJCalendarObject *object = [[DJCalendarObject alloc] init];
+        object.calendarType = DJCalendarTypeYear;
+        object.minDateStr = startDateString;
+        object.maxDateStr = endDateString;
+        object.minDate = date;
+        object.maxDate = date;
+        
+        _fatherVC.callBackBlock(_chooseType, object, labelString);
         
     }
     else if (_chooseType == DJChooseTypeMuti) {
@@ -228,7 +236,14 @@
         NSString *endDateString = [NSString stringWithFormat:@"%zd", endComponents.year];
         NSString *labelString = [NSString stringWithFormat:@"%zd年-%zd年", startComponents.year, endComponents.year];
         
-        _fatherVC.callBackBlock(_chooseType, DJCalendarTypeYear, startDateString, endDateString, labelString);
+        DJCalendarObject *object = [[DJCalendarObject alloc] init];
+        object.calendarType = DJCalendarTypeYear;
+        object.minDateStr = startDateString;
+        object.maxDateStr = endDateString;
+        object.minDate = startDate;
+        object.maxDate = endDate;
+        
+        _fatherVC.callBackBlock(_chooseType, object, labelString);
         [_fatherVC dismissViewController];
         
     }

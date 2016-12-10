@@ -50,16 +50,6 @@
         self.selectionLayer.fillColor = UIColorFromRGB(0x73b6f4).CGColor;
         self.selectionLayer.path = [UIBezierPath bezierPathWithRect:self.selectionLayer.bounds].CGPath;
         
-    } else if (self.selectionType == SelectionTypeLeftBorder) {
-        
-        self.selectionLayer.fillColor = UIColorFromRGB(0x3897f0).CGColor;
-        self.selectionLayer.path = [UIBezierPath bezierPathWithRect:self.selectionLayer.bounds].CGPath;
-        
-    } else if (self.selectionType == SelectionTypeRightBorder) {
-        
-        self.selectionLayer.fillColor = UIColorFromRGB(0x3897f0).CGColor;
-        self.selectionLayer.path = [UIBezierPath bezierPathWithRect:self.selectionLayer.bounds].CGPath;
-        
     } else if (self.selectionType == SelectionTypeSingle) {
         
         self.selectionLayer.fillColor = UIColorFromRGB(0x3897f0).CGColor;

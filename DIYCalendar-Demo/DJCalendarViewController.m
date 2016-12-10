@@ -30,6 +30,11 @@
     
 }
 
+- (void)dealloc
+{
+    NSLog(@"dealloc");
+}
+
 - (void)initUI {
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"选择日期范围";
@@ -174,9 +179,10 @@
     [_scrollView setContentOffset:CGPointMake(offset_X, 0) animated:YES];
 }
 
-- (void)setup:(DJChooseType)chooseType minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block
+- (void)setup:(DJChooseType)chooseType object:(DJCalendarObject *)obj minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block
 {
     _choosetype = chooseType;
+    _calendarObject = obj;
     NSDate *startDate = [self.dateFormatter dateFromString:minDate];
     NSDate *endDate = [self.dateFormatter dateFromString:maxDate];
     _calendarStartDate = startDate;

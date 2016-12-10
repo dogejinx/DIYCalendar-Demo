@@ -376,7 +376,15 @@
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd",startComponents.year, startComponents.month];
         NSString *endDateString = startDateString;
         NSString *labelString = [NSString stringWithFormat:@"%zd年%zd月", startComponents.year, startComponents.month];
-        _fatherVC.callBackBlock(_chooseType, DJCalendarTypeMonth, startDateString, endDateString, labelString);
+        
+        DJCalendarObject *object = [[DJCalendarObject alloc] init];
+        object.calendarType = DJCalendarTypeMonth;
+        object.minDateStr = startDateString;
+        object.maxDateStr = endDateString;
+        object.minDate = date;
+        object.maxDate = date;
+        
+        _fatherVC.callBackBlock(_chooseType, object, labelString);
         [_fatherVC dismissViewController];
     }
     else if (_chooseType == DJChooseTypeMuti) {
@@ -400,7 +408,14 @@
         NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd",endComponents.year, endComponents.month];
         NSString *labelString = [NSString stringWithFormat:@"%zd月-%zd月", startComponents.month, endComponents.month];
         
-        _fatherVC.callBackBlock(_chooseType, DJCalendarTypeMonth, startDateString, endDateString, labelString);
+        DJCalendarObject *object = [[DJCalendarObject alloc] init];
+        object.calendarType = DJCalendarTypeMonth;
+        object.minDateStr = startDateString;
+        object.maxDateStr = endDateString;
+        object.minDate = startDate;
+        object.maxDate = endDate;
+        
+        _fatherVC.callBackBlock(_chooseType, object, labelString);
         [_fatherVC dismissViewController];
 
     }

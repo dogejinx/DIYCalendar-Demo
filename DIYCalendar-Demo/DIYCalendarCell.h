@@ -12,9 +12,7 @@
 typedef NS_ENUM(NSUInteger, SelectionType) {
     SelectionTypeNone,
     SelectionTypeSingle,
-    SelectionTypeLeftBorder,
-    SelectionTypeMiddle,
-    SelectionTypeRightBorder
+    SelectionTypeMiddle
 };
 
 
