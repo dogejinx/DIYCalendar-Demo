@@ -19,6 +19,11 @@
 
 @property (nonatomic, strong) NSDateFormatter *dateFormatter;
 
+@property (nonatomic, strong) DJCalendarByDateViewController *byDateVC;
+@property (nonatomic, strong) DJCalendarByWeekViewController *byWeekVC;
+@property (nonatomic, strong) DJCalendarByMonthViewController *byMonthVC;
+@property (nonatomic, strong) DJCalendarByYearViewController *byYearVC;
+
 @end
 
 @implementation DJCalendarViewController
@@ -28,11 +33,6 @@
     [self initUI];
     
     
-}
-
-- (void)dealloc
-{
-    NSLog(@"dealloc");
 }
 
 - (void)initUI {
@@ -55,7 +55,7 @@
 {
     if (!_calendarStartDate && !_calendarEndDate) {
         self.calendarStartDate = [self.dateFormatter dateFromString:@"2011-01-02"];
-        self.calendarEndDate = [self.dateFormatter dateFromString:@"2016-12-31"];
+        self.calendarEndDate = [NSDate date];
     }
     
     UIView *view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -86,11 +86,11 @@
         DJCalendarByDateViewController *byDate = [[DJCalendarByDateViewController alloc] init];
         byDate.calendarStartDate = _calendarStartDate;
         byDate.calendarEndDate = _calendarEndDate;
-        byDate.chooseType = _choosetype;
+        byDate.chooseType = _chooseType;
         byDate.fatherVC = self;
         [self addChildViewController:byDate];
         [byDate didMoveToParentViewController:self];
-        
+        self.byDateVC = byDate;
         // 解决UICollectionView中 Cell宽度必须为整数的BUG
         CGFloat orgin_X = 0;
         CGFloat byDateView_Width = _scrollView.bounds.size.width;
@@ -117,10 +117,12 @@
         DJCalendarByWeekViewController * byWeek = [[DJCalendarByWeekViewController alloc] init];
         byWeek.calendarStartDate = _calendarStartDate;
         byWeek.calendarEndDate = _calendarEndDate;
-        byWeek.chooseType = _choosetype;
+        byWeek.chooseType = _chooseType;
         byWeek.fatherVC = self;
         [self addChildViewController:byWeek];
         [byWeek didMoveToParentViewController:self];
+        self.byWeekVC = byWeek;
+        
         byWeek.view.frame = CGRectMake(1 * _scrollView.bounds.size.width, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height);
         [_scrollView addSubview:byWeek.view];
     }
@@ -130,10 +132,12 @@
         DJCalendarByMonthViewController * byMonth = [[DJCalendarByMonthViewController alloc] init];
         byMonth.calendarStartDate = _calendarStartDate;
         byMonth.calendarEndDate = _calendarEndDate;
-        byMonth.chooseType = _choosetype;
+        byMonth.chooseType = _chooseType;
         byMonth.fatherVC = self;
         [self addChildViewController:byMonth];
         [byMonth didMoveToParentViewController:self];
+        self.byMonthVC = byMonth;
+        
         byMonth.view.frame = CGRectMake(2 * _scrollView.bounds.size.width, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height);
         [_scrollView addSubview:byMonth.view];
     }
@@ -142,10 +146,12 @@
         DJCalendarByYearViewController * byYear = [[DJCalendarByYearViewController alloc] init];
         byYear.calendarStartDate = _calendarStartDate;
         byYear.calendarEndDate = _calendarEndDate;
-        byYear.chooseType = _choosetype;
+        byYear.chooseType = _chooseType;
         byYear.fatherVC = self;
         [self addChildViewController:byYear];
         [byYear didMoveToParentViewController:self];
+        self.byYearVC = byYear;
+        
         byYear.view.frame = CGRectMake(3 * _scrollView.bounds.size.width, 0, _scrollView.bounds.size.width, _scrollView.bounds.size.height);
         [_scrollView addSubview:byYear.view];
     }
@@ -181,13 +187,20 @@
 
 - (void)setup:(DJCalendarObject *)obj minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block
 {
-    _calendarObject = obj;
-    _choosetype = obj.chooseType;
+    if (_calendarObject && _chooseType != obj.chooseType) {
+        [_byDateVC forceClearData];
+        [_byWeekVC forceClearData];
+        [_byMonthVC forceClearData];
+        [_byYearVC forceClearData];
+    }
+    
+    self.calendarObject = obj;
+    self.chooseType = obj.chooseType;
     NSDate *startDate = [self.dateFormatter dateFromString:minDate];
     NSDate *endDate = [self.dateFormatter dateFromString:maxDate];
-    _calendarStartDate = startDate;
-    _calendarEndDate = endDate;
-    _callBackBlock = block;
+    self.calendarStartDate = startDate;
+    self.calendarEndDate = endDate;
+    self.callBackBlock = block;
 }
 
 - (NSDateFormatter *)dateFormatter
@@ -202,6 +215,15 @@
 - (void)dismissViewController
 {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)setChooseType:(DJChooseType)chooseType
+{
+    _chooseType = chooseType;
+    _byDateVC.chooseType = chooseType;
+    _byWeekVC.chooseType = chooseType;
+    _byMonthVC.chooseType = chooseType;
+    _byYearVC.chooseType = chooseType;
 }
 
 @end

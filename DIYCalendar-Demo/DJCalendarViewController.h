@@ -18,7 +18,7 @@ typedef void(^CallBackBlock)(DJCalendarObject *obj);
 /**
     单选，多选模式
  */
-@property (nonatomic, assign) DJChooseType choosetype;
+@property (nonatomic, assign) DJChooseType chooseType;
 
 /**
     选择结束的回调

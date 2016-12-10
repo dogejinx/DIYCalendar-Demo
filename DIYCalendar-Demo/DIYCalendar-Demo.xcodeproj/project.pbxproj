@@ -227,7 +227,6 @@
 		7658022E1DF4095F00EAE6FF = {
 			isa = PBXGroup;
 			children = (
-				7658026D1DF4098900EAE6FF /* FSCalendar */,
 				7658029B1DF409BB00EAE6FF /* DJCalendar */,
 				765802391DF4095F00EAE6FF /* DIYCalendar-Demo */,
 				765802531DF4096000EAE6FF /* DIYCalendar-DemoTests */,
@@ -289,7 +288,7 @@
 			path = "DIYCalendar-DemoUITests";
 			sourceTree = "<group>";
 		};
-		7658026D1DF4098900EAE6FF /* FSCalendar */ = {
+		7658026D1DF4098900EAE6FF /* FSCalendar_Edit_Version */ = {
 			isa = PBXGroup;
 			children = (
 				7658029F1DF40A4E00EAE6FF /* FSCalendar.h */,
@@ -323,7 +322,7 @@
 				765802BB1DF40A4E00EAE6FF /* FSCalendarWeekdayView.h */,
 				765802BC1DF40A4E00EAE6FF /* FSCalendarWeekdayView.m */,
 			);
-			name = FSCalendar;
+			name = FSCalendar_Edit_Version;
 			sourceTree = "<group>";
 		};
 		7658029B1DF409BB00EAE6FF /* DJCalendar */ = {
@@ -343,6 +342,7 @@
 				7636BABA1DF7B8E70070487E /* ByWeek */,
 				7636BABB1DF7B8F00070487E /* ByMonth */,
 				7636BABC1DF7B8F90070487E /* ByYear */,
+				7658026D1DF4098900EAE6FF /* FSCalendar_Edit_Version */,
 			);
 			name = DJCalendar;
 			sourceTree = "<group>";

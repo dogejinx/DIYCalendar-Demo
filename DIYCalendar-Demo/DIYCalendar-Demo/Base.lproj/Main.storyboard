@@ -23,25 +23,45 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EAc-WL-Uu1">
                                 <rect key="frame" x="87" y="120" width="200" height="44"/>
+                                <color key="backgroundColor" red="0.60000002384185791" green="0.40000000596046448" blue="0.20000000298023224" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="200" id="EHu-gB-JXh"/>
                                     <constraint firstAttribute="height" constant="44" id="tOQ-hm-DrA"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <state key="normal" title="选择日期"/>
+                                <state key="normal" title="选择日期">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                                 <connections>
                                     <action selector="btnHandler:" destination="BYZ-38-t0r" eventType="touchUpInside" id="UY0-Lf-DsK"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FA5-EU-tFV">
+                                <rect key="frame" x="147" y="293.5" width="80" height="80"/>
+                                <color key="backgroundColor" red="0.60000002384185791" green="0.40000000596046448" blue="0.20000000298023224" alpha="0.5" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="80" id="0yB-Tg-t7L"/>
+                                    <constraint firstAttribute="width" constant="80" id="oWt-HP-eAv"/>
+                                </constraints>
+                                <state key="normal" title="切换到单选">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="modeBtnHandler:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2Ul-Vs-NCs"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="EAc-WL-Uu1" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="100" id="0GU-YL-Vrd"/>
+                            <constraint firstItem="FA5-EU-tFV" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="NS3-ki-PUV"/>
                             <constraint firstItem="EAc-WL-Uu1" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="n4p-ri-w3H"/>
+                            <constraint firstItem="FA5-EU-tFV" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="xYF-pD-Q34"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="btn" destination="EAc-WL-Uu1" id="yz6-1t-6kd"/>
+                        <outlet property="modeBtn" destination="FA5-EU-tFV" id="imf-0i-GpQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

@@ -315,4 +315,11 @@
     }
 }
 
+
+- (void)forceClearData
+{
+    [_selectArr removeAllObjects];
+    [_tableView reloadData];
+}
+
 @end

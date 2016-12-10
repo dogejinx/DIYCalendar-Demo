@@ -255,7 +255,6 @@
         [self configureCell:obj forDate:date atMonthPosition:position];
     }];
     [_calendar reloadData];
-    NSLog(@"reloadData.257");
 }
 
 - (void)configureCell:(FSCalendarCell *)cell forDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
@@ -405,6 +404,17 @@
     else {
         return NO;
     }
+}
+
+- (void)forceClearData
+{
+    NSArray *arr = _calendar.selectedDates;
+    if (arr.count>0) {
+        for (NSDate *date in arr) {
+            [_calendar deselectDate:date];
+        }
+    }
+    [self configureVisibleCells];
 }
 
 @end

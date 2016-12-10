@@ -493,4 +493,12 @@
     }
 }
 
+- (void)forceClearData
+{
+    [_selectArr removeAllObjects];
+    _mainTableViewCurrentRow = 0;
+    [_mainTableView reloadData];
+    [_subTableView reloadData];
+}
+
 @end

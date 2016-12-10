@@ -16,4 +16,6 @@
 @property (nonatomic, strong) NSDate *calendarEndDate;
 
 @property (nonatomic, assign) DJChooseType chooseType;
+
+- (void)forceClearData;
 @end
