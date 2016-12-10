@@ -76,7 +76,7 @@
         [calendar registerClass:[DIYCalendarCell class] forCellReuseIdentifier:@"DIYCalendarCell"];
         
     }
-    calendar.firstWeekday = 2;
+    calendar.firstWeekday = 1;
     
     [view addSubview:calendar];
     self.calendar = calendar;
@@ -136,6 +136,18 @@
     return numberStr;
 }
 
+- (UIColor *)calendar:(FSCalendar *)calendar appearance:(FSCalendarAppearance *)appearance titleDefaultColorForDate:(NSDate *)date
+{
+    if ([self.gregorian isDateInToday:date]) {
+        return UIColorFromRGB(0xf54242);
+    }
+    NSDateComponents *dateComponents = [_gregorian components:NSCalendarUnitWeekday fromDate:date];
+    if (dateComponents.weekday == 1 || dateComponents.weekday == 7) {
+        return UIColorFromRGB(0x3897f0);
+    }
+    return _calendar.appearance.titleDefaultColor;
+}
+
 - (FSCalendarCell *)calendar:(FSCalendar *)calendar cellForDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
     DIYCalendarCell *cell = [calendar dequeueReusableCellWithIdentifier:@"DIYCalendarCell" forDate:date atMonthPosition:monthPosition];
@@ -149,23 +161,38 @@
 
 #pragma mark - FSCalendarDelegate
 
+- (BOOL)calendar:(FSCalendar *)calendar shouldSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
+{
+    NSDateComponents *dateComponents = [_gregorian components:NSCalendarUnitWeekday fromDate:date];
+    NSLog(@"weekday: %zd", dateComponents.weekday);
+    
+    if (_calendar.selectedDates.count >= 2) {
+        return NO;
+    }
+    
+    if (![self isValidRangeOfDay:_calendar.selectedDates.firstObject date:date]) {
+        [UIView animateWithDuration:0.15f animations:^{
+            _middleToast.alpha = 1;
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:1.f animations:^{
+                _middleToast.alpha = 0.3;
+            } completion:^(BOOL finished) {
+                _middleToast.alpha = 0.0;
+            }];
+        }];
+        return NO;
+    }
+    return YES;
+}
+
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
-    NSLog(@"did select date");
-    
-
-    [self configureVisibleCells];
+    [self clickAction:date];
 }
 
 - (void)calendar:(FSCalendar *)calendar didDeselectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
-    NSLog(@"did deselect date");
-//    [self configureVisibleCells];
-}
-
-- (void)calendarCurrentPageDidChange:(FSCalendar *)calendar
-{
-//    NSLog(@"did change page %@",[self.dateFormatter stringFromDate:calendar.currentPage]);
+    [self clickAction:date];
 }
 
 
@@ -191,7 +218,7 @@
     
     DIYCalendarCell *diyCell = (DIYCalendarCell *)cell;
     
-    diyCell.todayView.hidden = ![self.gregorian isDateInToday:date];
+    diyCell.todayView.hidden = YES;
     
     // Configure selection layer
     if (monthPosition == FSCalendarMonthPositionCurrent || self.calendar.scope == FSCalendarScopeWeek) {
@@ -248,9 +275,9 @@
     }
 }
 
-- (void)clickAction {
+- (void)clickAction:(NSDate *)date {
     if (_chooseType == DJChooseTypeSingle) {
-        if (_calendar.selectedDates.count >= 1) {
+        if (_calendar.selectedDates.count > 1) {
             return;
         }
         
@@ -258,37 +285,21 @@
         [self submitDate];
     }
     else {
-        if (_calendar.selectedDates.count >= 2) {
+        if (_calendar.selectedDates.count > 2) {
             return;
         }
         
-//        if (![_calendar.selectedDates containsObject:indexPath]) {
-//            if (![self isValidRangeOfDay:_selectArr.firstObject indexPath:indexPath]) {
-//                [UIView animateWithDuration:0.15f animations:^{
-//                    _middleToast.alpha = 1;
-//                } completion:^(BOOL finished) {
-//                    [UIView animateWithDuration:1.f animations:^{
-//                        _middleToast.alpha = 0.3;
-//                    } completion:^(BOOL finished) {
-//                        _middleToast.alpha = 0.0;
-//                    }];
-//                }];
-//                return;
-//            }
-//            
-//            [self configureVisibleCells];
-//        }
-//        else {
-//            [_selectArr removeObject:indexPath];
-//        }
-//        
+        
         if (_calendar.selectedDates.count == 0) {
+            [self configureVisibleCells];
             [_bottomToast updateTitleText:@"请选择日期"];
         }
         else if (_calendar.selectedDates.count == 1) {
+            [self configureVisibleCells];
             [_bottomToast updateTitleText:@"请再选择一个日期"];
         }
-        else if (_calendar.selectedDates.count >=2) {
+        else if (_calendar.selectedDates.count == 2) {
+            [self configureVisibleCells];
             [self submitDate];
         }
     }
@@ -308,19 +319,27 @@
             [_fatherVC dismissViewController];
         }
     }
-    else if (_chooseType == DJChooseTypeSingle) {
-        if (_calendar.selectedDates.count>1) {
-            
-            NSString *startDateString = @"20161201";
-            NSString *endDateString = @"20161207";
-            NSString *labelString = @"12月1号-12月7号";
-            _fatherVC.callBackBlock(_chooseType, DJCalendarTypeDay, startDateString, endDateString, labelString);
-            
+    else if (_chooseType == DJChooseTypeMuti) {
+        NSDate *startDate = _calendar.selectedDates.firstObject;
+        NSDate *endDate = _calendar.selectedDates.lastObject;
+        if ([startDate timeIntervalSinceDate:endDate] > 0) {
+            startDate = _calendar.selectedDates.lastObject;
+            endDate = _calendar.selectedDates.firstObject;
         }
+        
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
+        
+        NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
+        NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",endComponents.year, endComponents.month, endComponents.day];
+        NSString *labelString = [NSString stringWithFormat:@"%zd月%zd日-%zd月%zd日", startComponents.month,startComponents.day, endComponents.month, endComponents.day];
+        
+        _fatherVC.callBackBlock(_chooseType, DJCalendarTypeDay, startDateString, endDateString, labelString);
+        [_fatherVC dismissViewController];
     }
 }
 
-- (BOOL)isValidRangeOfDay:(NSDate *)dateX indexPath:(NSDate *)dateY
+- (BOOL)isValidRangeOfDay:(NSDate *)dateX date:(NSDate *)dateY
 {
     if (dateX == nil) {
         return YES;
