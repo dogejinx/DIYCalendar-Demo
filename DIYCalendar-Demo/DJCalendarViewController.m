@@ -179,10 +179,10 @@
     [_scrollView setContentOffset:CGPointMake(offset_X, 0) animated:YES];
 }
 
-- (void)setup:(DJChooseType)chooseType object:(DJCalendarObject *)obj minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block
+- (void)setup:(DJCalendarObject *)obj minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block
 {
-    _choosetype = chooseType;
     _calendarObject = obj;
+    _choosetype = obj.chooseType;
     NSDate *startDate = [self.dateFormatter dateFromString:minDate];
     NSDate *endDate = [self.dateFormatter dateFromString:maxDate];
     _calendarStartDate = startDate;

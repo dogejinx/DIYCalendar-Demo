@@ -35,19 +35,25 @@
         
         DJCalendarObject *obj = [[DJCalendarObject alloc] init];
         obj.calendarType = DJCalendarTypeDay;
+        obj.chooseType = DJChooseTypeSingle;
         obj.minDate = minDate;
         obj.maxDate = [NSDate date];
         self.calendarObject = obj;
     }
+    
+    [self updateBtnTitle];
 }
 
 
 - (IBAction)btnHandler:(UIButton *)sender {
     
-    [_calendarVC setup:DJChooseTypeMuti object:_calendarObject minDate:@"2011-01-05" maxDate:@"2016-12-11" block:^(DJChooseType chooseType, DJCalendarObject *calendarObj, NSString *labelStr) {
-        
-        NSLog(@"DJChooseType: %zd, DJCalendarType: %zd, startDate: %@, endDate: %@, labelStr: %@", chooseType, calendarObj.calendarType, calendarObj.minDateStr, calendarObj.maxDateStr, labelStr);
+    __weak typeof(self) weakSelf = self;
+    [_calendarVC setup:_calendarObject minDate:@"2011-01-05" maxDate:@"2016-12-10" block:^(DJCalendarObject *calendarObj) {
+        __strong typeof(self) strongSelf = weakSelf;
+        NSLog(@"DJChooseType: %zd, DJCalendarType: %zd, startDate: %@, endDate: %@, labelStr: %@", calendarObj.chooseType, calendarObj.calendarType, calendarObj.minDateApiStr, calendarObj.maxDateApiStr, calendarObj.showInLabelStr);
     
+        strongSelf.calendarObject = calendarObj;
+        [strongSelf updateBtnTitle];
     }];
     
     
@@ -56,5 +62,10 @@
     
 }
 
+- (void)updateBtnTitle
+{
+    NSString *btnTitle = [NSString stringWithFormat:@"%@ %@", _calendarObject.calendarTypeStr, _calendarObject.showInLabelStr];
+    [_btn setTitle:btnTitle forState:UIControlStateNormal];
+}
 
 @end

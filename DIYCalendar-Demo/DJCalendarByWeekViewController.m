@@ -47,8 +47,27 @@
     [super viewDidLoad];
     
     [self initWeekDataArr];
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self updateUI];
     [_mainTableView reloadData];
     [_subTableView reloadData];
+}
+
+- (void)updateUI
+{
+    if (_fatherVC.calendarObject.calendarType == DJCalendarTypeWeek) {
+        
+    }
+    else {
+        [self setupDefaultValue];
+        [self initWeekDataArr];
+    }
 }
 
 - (void)loadView
@@ -122,7 +141,6 @@
     self.weekDataArr = [NSMutableArray array];
     
     self.gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    _gregorian.firstWeekday = 2;
     _gregorian.minimumDaysInFirstWeek = 4;
     self.headerHeight = 30.f;
     self.mainTableViewCurrentRow = 0;
@@ -335,7 +353,7 @@
 - (void)clickAction:(NSIndexPath *)indexPath {
     if (_chooseType == DJChooseTypeSingle) {
         if (_selectArr.count >= 1) {
-            return;
+            [_selectArr removeAllObjects];
         }
         
         [_selectArr addObject:indexPath];
@@ -385,20 +403,14 @@
         DJCalendarWeekDataObject *obj = _weekDataArr[indexPath.section];
         
         NSDate *date = obj.weekArr[indexPath.row];
-        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
-        
-        NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
-        NSString *endDateString = startDateString;
-        NSString *labelString = [NSString stringWithFormat:@"%zd月%zd号-%zd月%zd号/%zd年", startComponents.month, startComponents.day, startComponents.month, startComponents.day, startComponents.year];
         
         DJCalendarObject *object = [[DJCalendarObject alloc] init];
         object.calendarType = DJCalendarTypeWeek;
-        object.minDateStr = startDateString;
-        object.maxDateStr = endDateString;
+        object.chooseType = _chooseType;
         object.minDate = date;
         object.maxDate = date;
         
-        _fatherVC.callBackBlock(_chooseType, object, labelString);
+        _fatherVC.callBackBlock(object);
         [_fatherVC dismissViewController];
     }
     else if (_chooseType == DJChooseTypeMuti) {
@@ -415,21 +427,13 @@
             endDate = startObj.weekArr[startIndexPath.row];
         }
         
-        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:startDate];
-        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:endDate];
-        
-        NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
-        NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",endComponents.year, endComponents.month, endComponents.day];
-        NSString *labelString = [NSString stringWithFormat:@"第%zd周-第%zd周", startComponents.weekOfYear, endComponents.weekOfYear];
-        
         DJCalendarObject *object = [[DJCalendarObject alloc] init];
         object.calendarType = DJCalendarTypeWeek;
-        object.minDateStr = startDateString;
-        object.maxDateStr = endDateString;
+        object.chooseType = _chooseType;
         object.minDate = startDate;
         object.maxDate = endDate;
         
-        _fatherVC.callBackBlock(_chooseType, object, labelString);
+        _fatherVC.callBackBlock(object);
         [_fatherVC dismissViewController];
     }
 }

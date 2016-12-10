@@ -11,9 +11,20 @@
 @interface DJCalendarObject : NSObject
 
 @property (nonatomic, assign) DJCalendarType calendarType;
-@property (nonatomic, strong) NSString *minDateStr;
-@property (nonatomic, strong) NSString *maxDateStr;
+@property (nonatomic, assign) DJChooseType chooseType;
 @property (nonatomic, strong) NSDate *minDate;
 @property (nonatomic, strong) NSDate *maxDate;
+
+// Read Only
+@property (readonly, strong) NSString *minDateApiStr;
+@property (readonly, strong) NSString *maxDateApiStr;
+@property (readonly, strong) NSString *calendarTypeStr;
+@property (readonly, strong) NSString *showInLabelStr;
+
+
+- (NSString *)minDateApiStr;
+- (NSString *)maxDateApiStr;
+- (NSString *)calendarTypeStr;
+- (NSString *)showInLabelStr;
 
 @end

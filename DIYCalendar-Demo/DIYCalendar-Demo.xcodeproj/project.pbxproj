@@ -333,8 +333,7 @@
 				7658029D1DF409FA00EAE6FF /* DJCalendarViewController.m */,
 				7636BAC11DF7EC1E0070487E /* DJCalendarConstants.h */,
 				7636BAC21DF7EC1E0070487E /* DJCalendarConstants.m */,
-				765802E51DFC333600EAE6FF /* DJCalendarObject.h */,
-				765802E61DFC333600EAE6FF /* DJCalendarObject.m */,
+				765802E81DFC4F9300EAE6FF /* Model */,
 				765802E41DFAB76500EAE6FF /* Toast */,
 				765802E01DFA2B5600EAE6FF /* SegmentHeaderView */,
 				765802D91DF9F2EF00EAE6FF /* TableViewHeader */,
@@ -373,6 +372,15 @@
 				765802E21DFAB75F00EAE6FF /* DJToastView.m */,
 			);
 			name = Toast;
+			sourceTree = "<group>";
+		};
+		765802E81DFC4F9300EAE6FF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				765802E51DFC333600EAE6FF /* DJCalendarObject.h */,
+				765802E61DFC333600EAE6FF /* DJCalendarObject.m */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

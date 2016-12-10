@@ -35,9 +35,30 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    [_calendar reloadData];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self updateUI];
+    [_calendar reloadData];
+}
+
+- (void)updateUI
+{
+    if (_fatherVC.calendarObject.calendarType == DJCalendarTypeDay) {
+        
+    }
+    else {
+        NSArray *arr = _calendar.selectedDates;
+        if (arr.count>0) {
+            for (NSDate *date in arr) {
+                [_calendar deselectDate:date];
+            }
+        }
+    }
+}
 - (void)loadView
 {
     UIView *view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -76,7 +97,6 @@
         [calendar registerClass:[DIYCalendarCell class] forCellReuseIdentifier:@"DIYCalendarCell"];
         
     }
-    calendar.firstWeekday = 1;
     
     [view addSubview:calendar];
     self.calendar = calendar;
@@ -98,13 +118,6 @@
     _middleToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
     _bottomToast.frame = CGRectMake(0, 0, 150, 40);
     _bottomToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(self.view.bounds) - 60);
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-    [_calendar reloadData];
 }
 
 - (void)addToastView
@@ -306,20 +319,14 @@
     if (_chooseType == DJChooseTypeSingle) {
         if (_calendar.selectedDate) {
             NSDate *date = _calendar.selectedDate;
-            NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
-            
-            NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
-            NSString *endDateString = startDateString;
-            NSString *labelString = [NSString stringWithFormat:@"%zd年%zd月%zd日", startComponents.year, startComponents.month, startComponents.day];
             
             DJCalendarObject *obj = [[DJCalendarObject alloc] init];
             obj.calendarType = DJCalendarTypeDay;
-            obj.minDateStr = startDateString;
-            obj.maxDateStr = endDateString;
+            obj.chooseType = _chooseType;
             obj.minDate = date;
             obj.maxDate = date;
             
-            _fatherVC.callBackBlock(_chooseType, obj, labelString);
+            _fatherVC.callBackBlock(obj);
             [_fatherVC dismissViewController];
         }
     }
@@ -331,21 +338,13 @@
             endDate = _calendar.selectedDates.firstObject;
         }
         
-        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
-        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
-        
-        NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
-        NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",endComponents.year, endComponents.month, endComponents.day];
-        NSString *labelString = [NSString stringWithFormat:@"%zd月%zd日-%zd月%zd日", startComponents.month,startComponents.day, endComponents.month, endComponents.day];
-        
         DJCalendarObject *obj = [[DJCalendarObject alloc] init];
         obj.calendarType = DJCalendarTypeDay;
-        obj.minDateStr = startDateString;
-        obj.maxDateStr = endDateString;
+        obj.chooseType = _chooseType;
         obj.minDate = startDate;
         obj.maxDate = endDate;
         
-        _fatherVC.callBackBlock(_chooseType, obj, labelString);
+        _fatherVC.callBackBlock(obj);
         [_fatherVC dismissViewController];
     }
 }

@@ -11,7 +11,7 @@
 #import "DJCalendarConstants.h"
 #import "DJCalendarObject.h"
 
-typedef void(^CallBackBlock)(DJChooseType type, DJCalendarObject *obj, NSString *labelStr);
+typedef void(^CallBackBlock)(DJCalendarObject *obj);
 
 @interface DJCalendarViewController : UIViewController
 
@@ -43,7 +43,7 @@ typedef void(^CallBackBlock)(DJChooseType type, DJCalendarObject *obj, NSString 
 /**
     使用前的配置方法
  */
-- (void)setup:(DJChooseType)chooseType object:(DJCalendarObject *)obj minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block;
+- (void)setup:(DJCalendarObject *)obj minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block;
 
 /**
     子控制器通过调用它，退出日历选择控件（内部实现可自己实现Pop还是Dismiss）
