@@ -8,11 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSUInteger, CellSelectionType) {
+    CellSelectionTypeNone,
+    CellSelectionTypeSingle,
+    CellSelectionTypeMutiBorder,
+    CellSelectionTypeMutiMiddle
+};
+
 @interface DJCalendarSubTableViewCell : UITableViewCell
 
 @property (nonatomic, strong) UILabel *calendarLabel;
-
+@property (nonatomic, assign) CellSelectionType cellSelectionType;
 @property (nonatomic, assign) CGFloat labelMargin;
-@property (nonatomic, assign) BOOL choose;
 
 @end

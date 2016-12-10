@@ -25,7 +25,7 @@
 - (void)commonInit
 {
     _labelMargin = 15.f;
-    _choose = NO;
+    _cellSelectionType = CellSelectionTypeNone;
     
     UILabel *label;
     
@@ -50,7 +50,7 @@
 {
     UIColor *aColor = [UIColor clearColor];
 
-    if (self.choose) {
+    if (_cellSelectionType == CellSelectionTypeSingle) {
         self.accessoryType = UITableViewCellAccessoryCheckmark;
         if (_calendarLabel.attributedText) {
             NSMutableAttributedString *attrStr = [_calendarLabel.attributedText mutableCopy];
@@ -64,7 +64,7 @@
         
         aColor = UIColorFromRGB(0xf6f6f6);
     }
-    else {
+    else if (_cellSelectionType == CellSelectionTypeNone) {
         self.accessoryType = UITableViewCellAccessoryNone;
         if (_calendarLabel.attributedText) {
             NSMutableAttributedString *attrStr = [_calendarLabel.attributedText mutableCopy];
@@ -76,6 +76,35 @@
             _calendarLabel.font = [UIFont systemFontOfSize:15.f];
         }
     }
+    else if (_cellSelectionType == CellSelectionTypeMutiBorder) {
+        self.accessoryType = UITableViewCellAccessoryNone;
+        if (_calendarLabel.attributedText) {
+            NSMutableAttributedString *attrStr = [_calendarLabel.attributedText mutableCopy];
+            [attrStr addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:NSMakeRange(0, _calendarLabel.text.length)];
+            _calendarLabel.attributedText = attrStr;
+        }
+        else {
+            _calendarLabel.textColor = [UIColor whiteColor];
+            _calendarLabel.font = [UIFont boldSystemFontOfSize:15.f];
+        }
+        
+        aColor = UIColorFromRGB(0x3897f0);
+    }
+    else if (_cellSelectionType == CellSelectionTypeMutiMiddle) {
+        self.accessoryType = UITableViewCellAccessoryNone;
+        if (_calendarLabel.attributedText) {
+            NSMutableAttributedString *attrStr = [_calendarLabel.attributedText mutableCopy];
+            [attrStr addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:NSMakeRange(0, _calendarLabel.text.length)];
+            _calendarLabel.attributedText = attrStr;
+        }
+        else {
+            _calendarLabel.textColor = [UIColor whiteColor];
+            _calendarLabel.font = [UIFont boldSystemFontOfSize:15.f];
+        }
+        
+        aColor = UIColorFromRGB(0x73b6f4);
+    }
+    
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineWidth(context, 0.5);
@@ -95,9 +124,9 @@
     [super drawRect:rect];
 }
 
-- (void)setChoose:(BOOL)choose
+- (void)setCellSelectionType:(CellSelectionType)cellSelectionType
 {
-    _choose = choose;
+    _cellSelectionType = cellSelectionType;
     [self setNeedsDisplay];
 }
 

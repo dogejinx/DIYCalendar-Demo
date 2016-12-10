@@ -212,11 +212,24 @@
         [cell.calendarLabel sizeToFit];
         
         
-        if ([_selectArr containsObject:indexPath]) {
-            cell.choose = YES;
+        if (_chooseType == DJChooseTypeSingle) {
+            if ([_selectArr containsObject:indexPath]) {
+                cell.cellSelectionType = CellSelectionTypeSingle;
+            }
+            else {
+                cell.cellSelectionType = CellSelectionTypeNone;
+            }
         }
-        else {
-            cell.choose = NO;
+        else if (_chooseType == DJChooseTypeMuti) {
+            if ([_selectArr containsObject:indexPath]) {
+                cell.cellSelectionType = CellSelectionTypeMutiBorder;
+            }
+            else if ([self isBetweenRangeOfSelected:indexPath]) {
+                cell.cellSelectionType = CellSelectionTypeMutiMiddle;
+            }
+            else {
+                cell.cellSelectionType = CellSelectionTypeNone;
+            }
         }
         
         return cell;
@@ -445,6 +458,39 @@
         return  YES;
     }
     return NO;
+}
+
+- (BOOL)isBetweenRangeOfSelected:(NSIndexPath *)indexPath
+{
+    if (_selectArr.count < 2) {
+        return NO;
+    }
+    
+    NSIndexPath *indexPathX = _selectArr.firstObject;
+    NSIndexPath *indexPathY = _selectArr.lastObject;
+    
+    DJCalendarMonthDataObject *obj = _monthDataArr[indexPath.section];
+    DJCalendarMonthDataObject *objX = _monthDataArr[indexPathX.section];
+    DJCalendarMonthDataObject *objY = _monthDataArr[indexPathY.section];
+    
+    NSDate *date = obj.monthArr[indexPath.row];
+    NSDate *dateX = objX.monthArr[indexPathX.row];
+    NSDate *dateY = objY.monthArr[indexPathY.row];
+    
+    NSDateComponents *dateFromX = [_gregorian components:NSCalendarUnitMonth fromDate:date toDate:dateX options:0];
+    NSDateComponents *dateFromY = [_gregorian components:NSCalendarUnitMonth fromDate:date toDate:dateY options:0];
+    NSDateComponents *xFromY = [_gregorian components:NSCalendarUnitMonth fromDate:dateX toDate:dateY options:0];
+    
+    NSInteger d_X = labs(dateFromX.month);
+    NSInteger d_Y = labs(dateFromY.month);
+    NSInteger x_Y = labs(xFromY.month);
+    
+    if (d_X + d_Y == x_Y) {
+        return YES;
+    }
+    else {
+        return NO;
+    }
 }
 
 @end

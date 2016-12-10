@@ -217,13 +217,25 @@
         cell.calendarLabel.attributedText = attrStr;
         [cell.calendarLabel sizeToFit];
         
-        if ([_selectArr containsObject:indexPath]) {
-            cell.choose = YES;
+        if (_chooseType == DJChooseTypeSingle) {
+            if ([_selectArr containsObject:indexPath]) {
+                cell.cellSelectionType = CellSelectionTypeSingle;
+            }
+            else {
+                cell.cellSelectionType = CellSelectionTypeNone;
+            }
         }
-        else {
-            cell.choose = NO;
+        else if (_chooseType == DJChooseTypeMuti) {
+            if ([_selectArr containsObject:indexPath]) {
+                cell.cellSelectionType = CellSelectionTypeMutiBorder;
+            }
+            else if ([self isBetweenRangeOfSelected:indexPath]) {
+                cell.cellSelectionType = CellSelectionTypeMutiMiddle;
+            }
+            else {
+                cell.cellSelectionType = CellSelectionTypeNone;
+            }
         }
-        
         return cell;
     }
 }
@@ -457,6 +469,39 @@
         return  YES;
     }
     return NO;
+}
+
+- (BOOL)isBetweenRangeOfSelected:(NSIndexPath *)indexPath
+{
+    if (_selectArr.count < 2) {
+        return NO;
+    }
+    
+    NSIndexPath *indexPathX = _selectArr.firstObject;
+    NSIndexPath *indexPathY = _selectArr.lastObject;
+    
+    DJCalendarWeekDataObject *obj = _weekDataArr[indexPath.section];
+    DJCalendarWeekDataObject *objX = _weekDataArr[indexPathX.section];
+    DJCalendarWeekDataObject *objY = _weekDataArr[indexPathY.section];
+    
+    NSDate *date = obj.weekArr[indexPath.row];
+    NSDate *dateX = objX.weekArr[indexPathX.row];
+    NSDate *dateY = objY.weekArr[indexPathY.row];
+    
+    NSDateComponents *dateFromX = [_gregorian components:NSCalendarUnitWeekOfYear fromDate:date toDate:dateX options:0];
+    NSDateComponents *dateFromY = [_gregorian components:NSCalendarUnitWeekOfYear fromDate:date toDate:dateY options:0];
+    NSDateComponents *xFromY = [_gregorian components:NSCalendarUnitWeekOfYear fromDate:dateX toDate:dateY options:0];
+    
+    NSInteger d_X = labs(dateFromX.weekOfYear);
+    NSInteger d_Y = labs(dateFromY.weekOfYear);
+    NSInteger x_Y = labs(xFromY.weekOfYear);
+    
+    if (d_X + d_Y == x_Y) {
+        return YES;
+    }
+    else {
+        return NO;
+    }
 }
 
 @end
