@@ -12,16 +12,21 @@
 #import "FSCalendar.h"
 #import "DIYCalendarCell.h"
 #import "DJCalendarWeekView.h"
+#import "DJToastView.h"
 
 @interface DJCalendarByDateViewController ()<FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance>
 
 @property (nonatomic, strong) DJCalendarWeekView *weekView;
 @property (nonatomic, strong) FSCalendar *calendar;
 
-@property (strong, nonatomic) NSCalendar *gregorian;
+@property (nonatomic, strong) NSCalendar *gregorian;
 
-@property (strong, nonatomic) NSDate *minimumDate;
-@property (strong, nonatomic) NSDate *maximumDate;
+@property (nonatomic, strong) NSDate *minimumDate;
+@property (nonatomic, strong) NSDate *maximumDate;
+
+@property (nonatomic, strong) DJToastView *middleToast;
+@property (nonatomic, strong) DJToastView *bottomToast;
+
 
 @end
 
@@ -80,6 +85,8 @@
     
     self.minimumDate = _calendarStartDate;
     self.maximumDate = _calendarEndDate;
+    
+    [self addToastView];
 }
 
 - (void)viewWillLayoutSubviews
@@ -87,6 +94,25 @@
     [super viewWillLayoutSubviews];
     _weekView.frame = CGRectMake(0, 0, self.view.bounds.size.width, 44);
     _calendar.frame = CGRectMake(0, 40, self.view.bounds.size.width, self.view.bounds.size.height - 40);
+    _middleToast.frame = CGRectMake(0, 0, 150, 40);
+    _middleToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+    _bottomToast.frame = CGRectMake(0, 0, 150, 40);
+    _bottomToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(self.view.bounds) - 60);
+}
+
+- (void)addToastView
+{
+    DJToastView *mToast = [[DJToastView alloc] initWithFrame:CGRectZero];
+    mToast.titlelabel.text = @"最多可选30天";
+    [self.view addSubview:mToast];
+    mToast.alpha = 0.0;
+    self.middleToast = mToast;
+    
+    DJToastView *bToast = [[DJToastView alloc] initWithFrame:CGRectZero];
+    bToast.titlelabel.text = @"请选择日期";
+    [self.view addSubview:bToast];
+    self.bottomToast = bToast;
+    
 }
 
 #pragma mark - FSCalendarDataSource
@@ -126,14 +152,15 @@
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
     NSLog(@"did select date");
+    
+
     [self configureVisibleCells];
-//    [self clickAction];
 }
 
 - (void)calendar:(FSCalendar *)calendar didDeselectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
     NSLog(@"did deselect date");
-    [self configureVisibleCells];
+//    [self configureVisibleCells];
 }
 
 - (void)calendarCurrentPageDidChange:(FSCalendar *)calendar
@@ -172,6 +199,17 @@
         diyCell.eventIndicator.hidden = YES;
         
         SelectionType selectionType = SelectionTypeNone;
+        
+        if (self.calendar.selectedDates.count == 0) {
+            
+        }
+        else if (self.calendar.selectedDates.count == 1) {
+            
+        }
+        else if (self.calendar.selectedDates.count == 2) {
+            
+        }
+        
         if ([self.calendar.selectedDates containsObject:date]) {
             NSDate *previousDate = [self.gregorian dateByAddingUnit:NSCalendarUnitDay value:-1 toDate:date options:0];
             NSDate *nextDate = [self.gregorian dateByAddingUnit:NSCalendarUnitDay value:1 toDate:date options:0];
@@ -210,24 +248,50 @@
     }
 }
 
-- (void)clickAction
-{
+- (void)clickAction {
     if (_chooseType == DJChooseTypeSingle) {
-        if (!_calendar.selectedDate) {
-            // TODO:
+        if (_calendar.selectedDates.count >= 1) {
             return;
         }
         
+        [self configureVisibleCells];
         [self submitDate];
     }
     else {
-
+        if (_calendar.selectedDates.count >= 2) {
+            return;
+        }
         
-        if (_calendar.selectedDates.count >=2) {
+//        if (![_calendar.selectedDates containsObject:indexPath]) {
+//            if (![self isValidRangeOfDay:_selectArr.firstObject indexPath:indexPath]) {
+//                [UIView animateWithDuration:0.15f animations:^{
+//                    _middleToast.alpha = 1;
+//                } completion:^(BOOL finished) {
+//                    [UIView animateWithDuration:1.f animations:^{
+//                        _middleToast.alpha = 0.3;
+//                    } completion:^(BOOL finished) {
+//                        _middleToast.alpha = 0.0;
+//                    }];
+//                }];
+//                return;
+//            }
+//            
+//            [self configureVisibleCells];
+//        }
+//        else {
+//            [_selectArr removeObject:indexPath];
+//        }
+//        
+        if (_calendar.selectedDates.count == 0) {
+            [_bottomToast updateTitleText:@"请选择日期"];
+        }
+        else if (_calendar.selectedDates.count == 1) {
+            [_bottomToast updateTitleText:@"请再选择一个日期"];
+        }
+        else if (_calendar.selectedDates.count >=2) {
             [self submitDate];
         }
     }
-
 }
 
 - (void)submitDate
@@ -241,7 +305,7 @@
             NSString *endDateString = startDateString;
             NSString *labelString = [NSString stringWithFormat:@"%zd年%zd月%zd日", startComponents.year, startComponents.month, startComponents.day];
             _fatherVC.callBackBlock(_chooseType, DJCalendarTypeDay, startDateString, endDateString, labelString);
-            [_fatherVC dismissViewControllerAnimated:YES completion:nil];
+            [_fatherVC dismissViewController];
         }
     }
     else if (_chooseType == DJChooseTypeSingle) {
@@ -256,5 +320,23 @@
     }
 }
 
+- (BOOL)isValidRangeOfDay:(NSDate *)dateX indexPath:(NSDate *)dateY
+{
+    if (dateX == nil) {
+        return YES;
+    }
+    
+    NSDate *startDate = dateX;
+    NSDate *endDate = dateY;
+    
+    NSDateComponents *resultComponents = [_gregorian components:NSCalendarUnitDay fromDate:startDate toDate:endDate options:0];
+    
+    NSInteger result = labs(resultComponents.day);
+    // 限制单日跨度30天
+    if (result <= 30) {
+        return  YES;
+    }
+    return NO;
+}
 
 @end

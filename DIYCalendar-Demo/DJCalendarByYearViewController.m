@@ -8,6 +8,7 @@
 
 #import "DJCalendarByYearViewController.h"
 #import "DJCalendarSubTableViewCell.h"
+#import "DJToastView.h"
 
 @interface DJCalendarByYearViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -17,6 +18,9 @@
 @property (nonatomic, strong) NSMutableArray<NSIndexPath *> *selectArr;
 
 @property (nonatomic, strong) NSCalendar *gregorian;
+
+@property (nonatomic, strong) DJToastView *middleToast;
+@property (nonatomic, strong) DJToastView *bottomToast;
 
 @end
 
@@ -47,11 +51,32 @@
     [view addSubview:tableView];
     self.tableView = tableView;
     
+    [self addToastView];
+    
 }
 
-- (void)viewDidLayoutSubviews
+- (void)viewWillLayoutSubviews
 {
     _tableView.frame = self.view.bounds;
+    _middleToast.frame = CGRectMake(0, 0, 150, 40);
+    _middleToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+    _bottomToast.frame = CGRectMake(0, 0, 150, 40);
+    _bottomToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(self.view.bounds) - 60);
+}
+
+- (void)addToastView
+{
+    DJToastView *mToast = [[DJToastView alloc] initWithFrame:CGRectZero];
+    mToast.titlelabel.text = @"最多可选12年";
+    [self.view addSubview:mToast];
+    mToast.alpha = 0.0;
+    self.middleToast = mToast;
+    
+    DJToastView *bToast = [[DJToastView alloc] initWithFrame:CGRectZero];
+    bToast.titlelabel.text = @"请选择日期";
+    [self.view addSubview:bToast];
+    self.bottomToast = bToast;
+    
 }
 
 - (void)initDefaultValues
@@ -133,17 +158,38 @@
         [self submitDate];
     }
     else {
+        
         if (_selectArr.count >= 2) {
             return;
         }
         
         if (![_selectArr containsObject:indexPath]) {
+            if (![self isValidRangeOfYear:_selectArr.firstObject indexPath:indexPath]) {
+                [UIView animateWithDuration:0.15f animations:^{
+                    _middleToast.alpha = 1;
+                } completion:^(BOOL finished) {
+                    [UIView animateWithDuration:1.f animations:^{
+                        _middleToast.alpha = 0.3;
+                    } completion:^(BOOL finished) {
+                        _middleToast.alpha = 0.0;
+                    }];
+                }];
+                return;
+            }
+            
             [_selectArr addObject:indexPath];
         }
         else {
             [_selectArr removeObject:indexPath];
         }
-        if (_selectArr.count >=2) {
+        
+        if (_selectArr.count == 0) {
+            [_bottomToast updateTitleText:@"请选择日期"];
+        }
+        else if (_selectArr.count == 1) {
+            [_bottomToast updateTitleText:@"请再选择一个日期"];
+        }
+        else if (_selectArr.count >=2) {
             [self submitDate];
         }
     }
@@ -183,9 +229,28 @@
         NSString *labelString = [NSString stringWithFormat:@"%zd年-%zd年", startComponents.year, endComponents.year];
         
         _fatherVC.callBackBlock(_chooseType, DJCalendarTypeYear, startDateString, endDateString, labelString);
-        [_fatherVC dismissViewControllerAnimated:YES completion:nil];
+        [_fatherVC dismissViewController];
         
     }
+}
+
+- (BOOL)isValidRangeOfYear:(NSIndexPath *)indexPathX indexPath:(NSIndexPath *)indexPathY
+{
+    if (indexPathX == nil) {
+        return YES;
+    }
+    
+    NSDate *startDate = _yearArr[indexPathX.row];
+    NSDate *endDate = _yearArr[indexPathY.row];
+    
+    NSDateComponents *resultComponents = [_gregorian components:NSCalendarUnitYear fromDate:startDate toDate:endDate options:0];
+    
+    NSInteger result = labs(resultComponents.year);
+    // 限制年份跨度12年
+    if (result <= 12) {
+        return  YES;
+    }
+    return NO;
 }
 
 @end

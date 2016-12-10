@@ -20,5 +20,5 @@ typedef void(^CallBackBlock)(DJChooseType, DJCalendarType, NSString *startDate, 
 @property (nonatomic, assign) DJChooseType choosetype;
 
 - (void)setup:(DJChooseType)chooseType minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block;
-
+- (void)dismissViewController;
 @end

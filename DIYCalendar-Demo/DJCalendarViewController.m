@@ -193,4 +193,9 @@
     return _dateFormatter;
 }
 
+- (void)dismissViewController
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 @end

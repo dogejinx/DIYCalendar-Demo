@@ -10,6 +10,7 @@
 #import "DJCalendarMainTableViewCell.h"
 #import "DJCalendarSubTableViewCell.h"
 #import "DJTableViewHeader.h"
+#import "DJToastView.h"
 
 @interface DJCalendarWeekDataObject : NSObject
 
@@ -34,6 +35,9 @@
 
 @property (nonatomic, strong) NSCalendar *gregorian;
 @property (nonatomic, assign) CGFloat headerHeight;
+
+@property (nonatomic, strong) DJToastView *middleToast;
+@property (nonatomic, strong) DJToastView *bottomToast;
 
 @end
 
@@ -83,12 +87,33 @@
         self.subTableView = subTableView;
     }
     
+    [self addToastView];
+    
 }
 
-- (void)viewDidLayoutSubviews
+- (void)viewWillLayoutSubviews
 {
     _mainTableView.frame = CGRectMake(0, 0, 88, self.view.bounds.size.height);
     _subTableView.frame = CGRectMake(_mainTableView.bounds.size.width, 0, self.view.bounds.size.width - _mainTableView.bounds.size.width, self.view.bounds.size.height);
+    _middleToast.frame = CGRectMake(0, 0, 150, 40);
+    _middleToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds));
+    _bottomToast.frame = CGRectMake(0, 0, 150, 40);
+    _bottomToast.center = CGPointMake(CGRectGetMidX(self.view.bounds), CGRectGetMaxY(self.view.bounds) - 60);
+}
+
+- (void)addToastView
+{
+    DJToastView *mToast = [[DJToastView alloc] initWithFrame:CGRectZero];
+    mToast.titlelabel.text = @"最多可选8周";
+    [self.view addSubview:mToast];
+    mToast.alpha = 0.0;
+    self.middleToast = mToast;
+    
+    DJToastView *bToast = [[DJToastView alloc] initWithFrame:CGRectZero];
+    bToast.titlelabel.text = @"请选择日期";
+    [self.view addSubview:bToast];
+    self.bottomToast = bToast;
+    
 }
 
 - (void)setupDefaultValue
@@ -322,12 +347,32 @@
         }
         
         if (![_selectArr containsObject:indexPath]) {
+            if (![self isValidRangeOfWeek:_selectArr.firstObject indexPath:indexPath]) {
+                [UIView animateWithDuration:0.15f animations:^{
+                    _middleToast.alpha = 1;
+                } completion:^(BOOL finished) {
+                    [UIView animateWithDuration:1.f animations:^{
+                        _middleToast.alpha = 0.3;
+                    } completion:^(BOOL finished) {
+                        _middleToast.alpha = 0.0;
+                    }];
+                }];
+                return;
+            }
+            
             [_selectArr addObject:indexPath];
         }
         else {
             [_selectArr removeObject:indexPath];
         }
-        if (_selectArr.count >=2) {
+        
+        if (_selectArr.count == 0) {
+            [_bottomToast updateTitleText:@"请选择日期"];
+        }
+        else if (_selectArr.count == 1) {
+            [_bottomToast updateTitleText:@"请再选择一个日期"];
+        }
+        else if (_selectArr.count >=2) {
             [self submitDate];
         }
     }
@@ -346,7 +391,7 @@
         NSString *endDateString = startDateString;
         NSString *labelString = [NSString stringWithFormat:@"%zd月%zd号-%zd月%zd号/%zd年", startComponents.month, startComponents.day, startComponents.month, startComponents.day, startComponents.year];
         _fatherVC.callBackBlock(_chooseType, DJCalendarTypeWeek, startDateString, endDateString, labelString);
-        [_fatherVC dismissViewControllerAnimated:YES completion:nil];
+        [_fatherVC dismissViewController];
     }
     else if (_chooseType == DJChooseTypeMuti) {
         NSIndexPath *startIndexPath = _selectArr.firstObject;
@@ -370,9 +415,30 @@
         NSString *labelString = [NSString stringWithFormat:@"第%zd周-第%zd周", startComponents.weekOfYear, endComponents.weekOfYear];
         
         _fatherVC.callBackBlock(_chooseType, DJCalendarTypeWeek, startDateString, endDateString, labelString);
-        [_fatherVC dismissViewControllerAnimated:YES completion:nil];
+        [_fatherVC dismissViewController];
     }
 }
 
+- (BOOL)isValidRangeOfWeek:(NSIndexPath *)indexPathX indexPath:(NSIndexPath *)indexPathY
+{
+    if (indexPathX == nil) {
+        return YES;
+    }
+    
+    DJCalendarWeekDataObject *startObj = _weekDataArr[indexPathX.section];
+    DJCalendarWeekDataObject *endObj = _weekDataArr[indexPathY.section];
+    
+    NSDate *startDate = startObj.weekArr[indexPathX.row];
+    NSDate *endDate = endObj.weekArr[indexPathY.row];
+    
+    NSDateComponents *resultComponents = [_gregorian components:NSCalendarUnitWeekOfYear fromDate:startDate toDate:endDate options:0];
+    
+    NSInteger result = labs(resultComponents.weekOfYear);
+    // 限制周跨度8周
+    if (result <= 8) {
+        return  YES;
+    }
+    return NO;
+}
 
 @end
