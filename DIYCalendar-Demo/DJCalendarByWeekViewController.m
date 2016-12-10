@@ -61,10 +61,9 @@
 
 - (void)updateUI
 {
-    if (_fatherVC.calendarObject.calendarType == DJCalendarTypeWeek) {
-        
-    }
-    else {
+    [_bottomToast updateTitleText:@"请选择日期"];
+    
+    if (_fatherVC.calendarObject.calendarType != DJCalendarTypeWeek) {
         [self setupDefaultValue];
         [self initWeekDataArr];
     }
@@ -361,7 +360,7 @@
     }
     else {
         if (_selectArr.count >= 2) {
-            return;
+            [_selectArr removeAllObjects];
         }
         
         if (![_selectArr containsObject:indexPath]) {

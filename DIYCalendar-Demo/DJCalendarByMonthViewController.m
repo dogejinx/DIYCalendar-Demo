@@ -62,10 +62,9 @@
 
 - (void)updateUI
 {
-    if (_fatherVC.calendarObject.calendarType == DJCalendarTypeMonth) {
-        
-    }
-    else {
+    [_bottomToast updateTitleText:@"请选择日期"];
+    
+    if (_fatherVC.calendarObject.calendarType != DJCalendarTypeMonth) {
         [self setupDefaultValue];
         [self initMonthDataArr];
     }
@@ -348,7 +347,7 @@
     }
     else {
         if (_selectArr.count >= 2) {
-            return;
+            [_selectArr removeAllObjects];
         }
         
         if (![_selectArr containsObject:indexPath]) {

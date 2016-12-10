@@ -35,7 +35,7 @@
         
         DJCalendarObject *obj = [[DJCalendarObject alloc] init];
         obj.calendarType = DJCalendarTypeDay;
-        obj.chooseType = DJChooseTypeSingle;
+        obj.chooseType = DJChooseTypeMuti;
         obj.minDate = minDate;
         obj.maxDate = [NSDate date];
         self.calendarObject = obj;

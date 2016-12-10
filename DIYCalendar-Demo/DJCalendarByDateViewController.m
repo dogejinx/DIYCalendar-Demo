@@ -40,17 +40,14 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
     [self updateUI];
-    [_calendar reloadData];
 }
 
 - (void)updateUI
 {
-    if (_fatherVC.calendarObject.calendarType == DJCalendarTypeDay) {
-        
-    }
-    else {
+    [_bottomToast updateTitleText:@"请选择日期"];
+    
+    if (_chooseType == DJChooseTypeMuti) {
         NSArray *arr = _calendar.selectedDates;
         if (arr.count>0) {
             for (NSDate *date in arr) {
@@ -59,6 +56,7 @@
         }
     }
 }
+
 - (void)loadView
 {
     UIView *view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -193,11 +191,13 @@
 
 - (BOOL)calendar:(FSCalendar *)calendar shouldSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
-    NSDateComponents *dateComponents = [_gregorian components:NSCalendarUnitWeekday fromDate:date];
-    NSLog(@"weekday: %zd", dateComponents.weekday);
-    
     if (_calendar.selectedDates.count >= 2) {
-        return NO;
+        NSArray *arr = _calendar.selectedDates;
+        if (arr.count>0) {
+            for (NSDate *date in arr) {
+                [_calendar deselectDate:date];
+            }
+        }
     }
     
     if (![self isValidRangeOfDay:_calendar.selectedDates.firstObject date:date]) {
@@ -214,6 +214,19 @@
     }
     return YES;
 }
+
+//- (BOOL)calendar:(FSCalendar *)calendar shouldDeselectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
+//{
+//    if (_calendar.selectedDates.count >= 2) {
+//        NSArray *arr = _calendar.selectedDates;
+//        if (arr.count>0) {
+//            for (NSDate *date in arr) {
+//                [_calendar deselectDate:date];
+//            }
+//        }
+//    }
+//
+//}
 
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
@@ -241,6 +254,8 @@
         FSCalendarMonthPosition position = [self.calendar monthPositionForCell:obj];
         [self configureCell:obj forDate:date atMonthPosition:position];
     }];
+    [_calendar reloadData];
+    NSLog(@"reloadData.257");
 }
 
 - (void)configureCell:(FSCalendarCell *)cell forDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
@@ -315,7 +330,6 @@
 
 - (void)submitDate
 {
-    [_calendar reloadData];
     if (_chooseType == DJChooseTypeSingle) {
         if (_calendar.selectedDate) {
             NSDate *date = _calendar.selectedDate;

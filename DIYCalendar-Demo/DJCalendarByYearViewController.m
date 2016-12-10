@@ -43,10 +43,9 @@
 
 - (void)updateUI
 {
-    if (_fatherVC.calendarObject.calendarType == DJCalendarTypeYear) {
-        
-    }
-    else {
+    _bottomToast.titlelabel.text = @"请选择日期";
+    
+    if (_fatherVC.calendarObject.calendarType != DJCalendarTypeYear) {
         [self setupDefaultValue];
         [self initYearDataArr];
     }
@@ -178,7 +177,7 @@
     else {
         
         if (_selectArr.count >= 2) {
-            return;
+            [_selectArr removeAllObjects];
         }
         
         if (![_selectArr containsObject:indexPath]) {
