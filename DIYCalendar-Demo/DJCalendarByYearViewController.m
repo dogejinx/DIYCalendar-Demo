@@ -30,26 +30,41 @@
     [super viewDidLoad];
     
     [self initYearDataArr];
+    [self updateData];
+    
     [_tableView reloadData];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)updateData
 {
-    [super viewDidAppear:animated];
-    
-    [self updateUI];
-    [_tableView reloadData];
-}
-
-- (void)updateUI
-{
-    _bottomToast.titlelabel.text = @"请选择日期";
-    
-    if (_fatherVC.calendarObject.calendarType != DJCalendarTypeYear) {
-        [self setupDefaultValue];
-        [self initYearDataArr];
+    DJCalendarObject *obj = _fatherVC.calendarObject;
+    if (obj.calendarType == DJCalendarTypeYear
+        && obj.minDate && obj.maxDate) {
+        for (NSInteger i=0; i<_yearDataArr.count; i++) {
+            
+            NSDate *date = _yearDataArr[i];
+            NSDateComponents *minDateComponents = [_gregorian components:NSCalendarUnitYear fromDate:date toDate:obj.minDate options:0];
+            NSDateComponents *maxDateComponents = [_gregorian components:NSCalendarUnitYear fromDate:date toDate:obj.maxDate options:0];
+            
+            if (minDateComponents.year == 0) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+                
+                if (![_selectArr containsObject:indexPath]) {
+                    [_selectArr addObject:indexPath];
+                }
+                
+            }
+            
+            if (maxDateComponents.year == 0) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+                if (![_selectArr containsObject:indexPath]) {
+                    [_selectArr addObject:indexPath];
+                }
+            }
+        }
     }
 }
+
 
 - (void)loadView
 {
@@ -103,7 +118,7 @@
     self.yearDataArr = [NSMutableArray array];
     
     self.gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    _gregorian.minimumDaysInFirstWeek = 4;
+    _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
     
 }
 
@@ -315,11 +330,5 @@
     }
 }
 
-
-- (void)forceClearData
-{
-    [_selectArr removeAllObjects];
-    [_tableView reloadData];
-}
 
 @end

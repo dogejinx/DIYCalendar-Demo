@@ -12,7 +12,6 @@
 
 @interface ViewController ()
 
-@property (nonatomic, strong) DJCalendarViewController *calendarVC;
 @property (nonatomic, strong) DJCalendarObject *calendarObject;
 
 @end
@@ -30,9 +29,6 @@
     NSDate *minDate = [[NSCalendar currentCalendar] dateFromComponents:components];
     
     {
-        DJCalendarViewController *calendarVC = [[DJCalendarViewController alloc] init];
-        self.calendarVC = calendarVC;
-        
         DJCalendarObject *obj = [[DJCalendarObject alloc] init];
         obj.calendarType = DJCalendarTypeDay;
         obj.chooseType = DJChooseTypeMuti;
@@ -48,8 +44,9 @@
 
 - (IBAction)btnHandler:(UIButton *)sender {
     
+    DJCalendarViewController *calendarVC = [[DJCalendarViewController alloc] init];
     __weak typeof(self) weakSelf = self;
-    [_calendarVC setup:_calendarObject minDate:@"2011-01-05" maxDate:@"2016-12-10" block:^(DJCalendarObject *calendarObj) {
+    [calendarVC setup:_calendarObject block:^(DJCalendarObject *calendarObj) {
         __strong typeof(self) strongSelf = weakSelf;
         
         NSLog(@"DJChooseType: %zd, DJCalendarType: %zd, startDate: %@, endDate: %@, labelStr: %@", calendarObj.chooseType, calendarObj.calendarType, calendarObj.minDateApiStr, calendarObj.maxDateApiStr, calendarObj.showInLabelStr);
@@ -60,7 +57,7 @@
     }];
     
     
-    UINavigationController * navi = [[UINavigationController alloc] initWithRootViewController:_calendarVC];
+    UINavigationController * navi = [[UINavigationController alloc] initWithRootViewController:calendarVC];
     [self presentViewController:navi animated:YES completion:nil];
     
 }

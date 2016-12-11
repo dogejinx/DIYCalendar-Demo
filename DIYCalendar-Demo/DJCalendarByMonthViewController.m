@@ -47,26 +47,30 @@
     [super viewDidLoad];
     
     [self initMonthDataArr];
-    [_mainTableView reloadData];
-    [_subTableView reloadData];
+    [self updateData];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)updateData
 {
-    [super viewDidAppear:animated];
-    
-    [self updateUI];
-    [_mainTableView reloadData];
-    [_subTableView reloadData];
-}
+    DJCalendarObject *obj = _fatherVC.calendarObject;
+    if (obj.calendarType == DJCalendarTypeMonth
+        && obj.minDate && obj.maxDate) {
+        
+        [_monthDataArr enumerateObjectsUsingBlock:^(__kindof DJCalendarMonthDataObject * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [self configureObject:obj section:idx];
+            
+            if ([self selectArrFinished]) {
+                *stop = YES;
+                return;
+            }
 
-- (void)updateUI
-{
-    [_bottomToast updateTitleText:@"请选择日期"];
-    
-    if (_fatherVC.calendarObject.calendarType != DJCalendarTypeMonth) {
-        [self setupDefaultValue];
-        [self initMonthDataArr];
+        }];
+        
+        NSIndexPath *selectIndexPath = _selectArr.firstObject;
+        [_subTableView reloadData];
+        [_subTableView scrollToRowAtIndexPath:selectIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        _mainTableViewCurrentRow = selectIndexPath.section;
+        [_mainTableView reloadData];
     }
 }
 
@@ -141,7 +145,7 @@
     self.monthDataArr = [NSMutableArray array];
     
     self.gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    _gregorian.minimumDaysInFirstWeek = 4;
+    _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
     self.headerHeight = 30.f;
     self.mainTableViewCurrentRow = 0;
 }
@@ -317,7 +321,7 @@
             if (i<endDateComponents.year) {
                 monthCountMax = 12;
             }
-            NSInteger monthCountMin = endDateComponents.month;
+            NSInteger monthCountMin = startDateComponents.month;
             if (i>startDateComponents.year) {
                 monthCountMin = 1;
             }
@@ -493,12 +497,52 @@
     }
 }
 
-- (void)forceClearData
+- (void)configureObject:(DJCalendarMonthDataObject *)object section:(NSInteger)section
 {
-    [_selectArr removeAllObjects];
-    _mainTableViewCurrentRow = 0;
-    [_mainTableView reloadData];
-    [_subTableView reloadData];
+    __weak typeof(self) weakSelf = self;
+    [object.monthArr enumerateObjectsUsingBlock:^(NSDate * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        NSDate *date = obj;
+        NSDateComponents *minDateComponents = [_gregorian components:NSCalendarUnitMonth fromDate:date toDate:strongSelf.fatherVC.calendarObject.minDate options:0];
+        NSDateComponents *maxDateComponents = [_gregorian components:NSCalendarUnitMonth fromDate:date toDate:strongSelf.fatherVC.calendarObject.maxDate options:0];
+        
+        if (minDateComponents.month == 0) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:section];
+            if (![_selectArr containsObject:indexPath]) {
+                [_selectArr addObject:indexPath];
+            }
+        }
+        
+        if (maxDateComponents.month == 0) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:section];
+            if (![_selectArr containsObject:indexPath]) {
+                [_selectArr addObject:indexPath];
+            }
+        }
+        
+        if ([self selectArrFinished]) {
+            *stop = YES;
+            return;
+        }
+        
+    }];
 }
+
+- (BOOL)selectArrFinished
+{
+    if (_chooseType == DJChooseTypeSingle) {
+        if (_selectArr.count == 1) {
+            return YES;
+        }
+    }
+    else if (_chooseType == DJChooseTypeSingle) {
+        if (_selectArr.count == 2) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 
 @end

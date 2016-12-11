@@ -35,25 +35,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self updateData];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)updateData
 {
-    [super viewDidAppear:animated];
-    [self updateUI];
-}
-
-- (void)updateUI
-{
-    [_bottomToast updateTitleText:@"请选择日期"];
-    
-    if (_chooseType == DJChooseTypeMuti) {
-        NSArray *arr = _calendar.selectedDates;
-        if (arr.count>0) {
-            for (NSDate *date in arr) {
-                [_calendar deselectDate:date];
-            }
-        }
+    DJCalendarObject *obj = _fatherVC.calendarObject;
+    if (obj.calendarType == DJCalendarTypeDay
+        && obj.minDate && obj.maxDate) {
+        
+        [_calendar selectDate:obj.minDate scrollToDate:YES];
+        [_calendar selectDate:obj.maxDate];
+        
+        [_calendar reloadData];
     }
 }
 
@@ -214,19 +208,6 @@
     }
     return YES;
 }
-
-//- (BOOL)calendar:(FSCalendar *)calendar shouldDeselectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
-//{
-//    if (_calendar.selectedDates.count >= 2) {
-//        NSArray *arr = _calendar.selectedDates;
-//        if (arr.count>0) {
-//            for (NSDate *date in arr) {
-//                [_calendar deselectDate:date];
-//            }
-//        }
-//    }
-//
-//}
 
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
@@ -406,15 +387,5 @@
     }
 }
 
-- (void)forceClearData
-{
-    NSArray *arr = _calendar.selectedDates;
-    if (arr.count>0) {
-        for (NSDate *date in arr) {
-            [_calendar deselectDate:date];
-        }
-    }
-    [self configureVisibleCells];
-}
 
 @end
