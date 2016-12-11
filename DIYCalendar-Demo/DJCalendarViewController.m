@@ -74,6 +74,7 @@
     scrollView.delegate = self;
     scrollView.pagingEnabled = YES;
     scrollView.showsHorizontalScrollIndicator = NO;
+    scrollView.directionalLockEnabled = YES;
     self.scrollView = scrollView;
     
     [self setupSubViewController];

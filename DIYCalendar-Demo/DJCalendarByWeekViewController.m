@@ -327,7 +327,7 @@
                 NSDateComponents *dateComponents = [_gregorian components:NSCalendarUnitWeekOfYear fromDate:dateFromDateComponentsForLastDate];
                 weekCountMax = dateComponents.weekOfYear;
             }
-            NSInteger weekCountMin = endDateComponents.weekOfYear;
+            NSInteger weekCountMin = startDateComponents.weekOfYear;
             if (i>startDateComponents.yearForWeekOfYear) {
                 weekCountMin = 1;
             }

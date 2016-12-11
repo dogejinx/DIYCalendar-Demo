@@ -317,7 +317,7 @@
             if (i<endDateComponents.year) {
                 monthCountMax = 12;
             }
-            NSInteger monthCountMin = endDateComponents.month;
+            NSInteger monthCountMin = startDateComponents.month;
             if (i>startDateComponents.year) {
                 monthCountMin = 1;
             }

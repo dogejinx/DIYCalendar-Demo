@@ -56,6 +56,10 @@
 
 - (void)updateTitleText:(NSString *)text
 {
+    if ([text isEqualToString:_titlelabel.text]) {
+        return;
+    }
+    
     CGPoint point = self.center;
     point.y += 120;
     
