@@ -43,11 +43,26 @@
     DJCalendarObject *obj = _fatherVC.calendarObject;
     if (obj.calendarType == DJCalendarTypeDay
         && obj.minDate && obj.maxDate) {
-        
-        [_calendar selectDate:obj.minDate scrollToDate:YES];
         [_calendar selectDate:obj.maxDate];
+        [_calendar selectDate:obj.minDate scrollToDate:YES];
+        
         
         [_calendar reloadData];
+        
+        
+        
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    if (_chooseType == DJChooseTypeMuti) {
+        NSArray *arr = _calendar.selectedDates;
+        for (NSDate *date in arr) {
+            [_calendar deselectDate:date];
+        }
     }
 }
 
@@ -209,6 +224,12 @@
     return YES;
 }
 
+- (BOOL)calendar:(FSCalendar *)calendar shouldDeselectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
+{
+    
+    return YES;
+}
+
 - (void)calendar:(FSCalendar *)calendar didSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
     [self clickAction:date];
@@ -345,6 +366,10 @@
 
 - (BOOL)isValidRangeOfDay:(NSDate *)dateX date:(NSDate *)dateY
 {
+    if (_chooseType == DJChooseTypeSingle) {
+        return YES;
+    }
+    
     if (dateX == nil) {
         return YES;
     }

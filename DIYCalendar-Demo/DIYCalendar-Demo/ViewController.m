@@ -68,6 +68,10 @@
     else if (_calendarObject.chooseType == DJChooseTypeMuti) {
         _calendarObject.chooseType = DJChooseTypeSingle;
     }
+    _calendarObject.minDate = nil;
+    _calendarObject.maxDate = nil;
+    _calendarObject.calendarType = DJCalendarTypeDay;
+    
     [self updateModeBtnTitle];
 }
 
