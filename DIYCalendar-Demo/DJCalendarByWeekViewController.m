@@ -47,25 +47,31 @@
     [super viewDidLoad];
     
     [self initWeekDataArr];
+    [self updateData];
     
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)updateData
 {
-    [super viewDidAppear:animated];
-    
-    [self updateUI];
-    [_mainTableView reloadData];
-    [_subTableView reloadData];
-}
-
-- (void)updateUI
-{
-    [_bottomToast updateTitleText:@"请选择日期"];
-    
-    if (_fatherVC.calendarObject.calendarType != DJCalendarTypeWeek) {
-        [self setupDefaultValue];
-        [self initWeekDataArr];
+    DJCalendarObject *obj = _fatherVC.calendarObject;
+    if (obj.calendarType == DJCalendarTypeWeek
+        && obj.minDate && obj.maxDate) {
+        
+        [_weekDataArr enumerateObjectsUsingBlock:^(__kindof DJCalendarWeekDataObject * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [self configureObject:obj section:idx];
+            
+            if ([self selectArrFinished]) {
+                *stop = YES;
+                return;
+            }
+            
+        }];
+        
+        NSIndexPath *selectIndexPath = _selectArr.firstObject;
+        [_subTableView reloadData];
+        [_subTableView scrollToRowAtIndexPath:selectIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        _mainTableViewCurrentRow = selectIndexPath.section;
+        [_mainTableView reloadData];
     }
 }
 
@@ -140,7 +146,7 @@
     self.weekDataArr = [NSMutableArray array];
     
     self.gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    _gregorian.minimumDaysInFirstWeek = 4;
+    _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
     self.headerHeight = 30.f;
     self.mainTableViewCurrentRow = 0;
 }
@@ -504,11 +510,51 @@
     }
 }
 
-- (void)forceClearData
+- (void)configureObject:(DJCalendarWeekDataObject *)object section:(NSInteger)section
 {
-    [_selectArr removeAllObjects];
-    _mainTableViewCurrentRow = 0;
-    [_mainTableView reloadData];
-    [_subTableView reloadData];
+    __weak typeof(self) weakSelf = self;
+    [object.weekArr enumerateObjectsUsingBlock:^(NSDate * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        NSDate *date = obj;
+        NSDateComponents *minDateComponents = [_gregorian components:NSCalendarUnitWeekOfYear fromDate:date toDate:strongSelf.fatherVC.calendarObject.minDate options:0];
+        NSDateComponents *maxDateComponents = [_gregorian components:NSCalendarUnitWeekOfYear fromDate:date toDate:strongSelf.fatherVC.calendarObject.maxDate options:0];
+        
+        if (minDateComponents.weekOfYear == 0) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:section];
+            if (![_selectArr containsObject:indexPath]) {
+                [_selectArr addObject:indexPath];
+            }
+        }
+        
+        if (maxDateComponents.weekOfYear == 0) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:section];
+            if (![_selectArr containsObject:indexPath]) {
+                [_selectArr addObject:indexPath];
+            }
+        }
+        
+        if ([self selectArrFinished]) {
+            *stop = YES;
+            return;
+        }
+        
+    }];
 }
+
+- (BOOL)selectArrFinished
+{
+    if (_chooseType == DJChooseTypeSingle) {
+        if (_selectArr.count == 1) {
+            return YES;
+        }
+    }
+    else if (_chooseType == DJChooseTypeSingle) {
+        if (_selectArr.count == 2) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 @end

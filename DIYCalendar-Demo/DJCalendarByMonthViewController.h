@@ -17,5 +17,5 @@
 
 @property (nonatomic, assign) DJChooseType chooseType;
 
-- (void)forceClearData;
+
 @end

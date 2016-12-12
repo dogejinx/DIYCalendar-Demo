@@ -14,10 +14,103 @@
     NSString *_maxDateApiStr;
     NSString *_calendarTypeStr;
     NSString *_showInLabelStr;
+    
+    NSCalendar *_gregorian;
 }
 @end
 
 @implementation DJCalendarObject
+
+- (void)setCalendarType:(DJCalendarType)calendarType
+{
+    _calendarType = calendarType;
+    
+    if (self.minDate) {
+        _minDate = [self convertDate:_minDate byType:calendarType];
+    }
+    
+    if (self.minDate) {
+        _maxDate = [self convertDate:_maxDate byType:calendarType];
+    }
+}
+
+- (void)setMinDate:(NSDate *)minDate
+{
+    if (minDate) {
+        _minDate = [self convertDate:minDate byType:_calendarType];
+    }
+    else {
+        _minDate = nil;
+    }
+}
+
+- (void)setMaxDate:(NSDate *)maxDate
+{
+    if (maxDate) {
+        _maxDate = [self convertDate:maxDate byType:_calendarType];
+    }
+    else {
+        _maxDate = nil;
+    }
+}
+
+- (NSDate *)convertDate:(NSDate *)date byType:(DJCalendarType)calendarType
+{
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
+    
+    if (calendarType == DJCalendarTypeDay) {
+        NSCalendarUnit unit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+        NSDateComponents *components = [_gregorian components:unit fromDate:date];
+        
+        NSDateComponents *resultComponents = [[NSDateComponents alloc] init];
+        [resultComponents setDay:components.day];
+        [resultComponents setMonth:components.month];
+        [resultComponents setYear:components.year];
+        
+        NSDate *result = [_gregorian dateFromComponents:resultComponents];
+        return result;
+    }
+    else if (calendarType == DJCalendarTypeWeek) {
+        NSCalendarUnit unit = NSCalendarUnitYearForWeekOfYear | NSCalendarUnitWeekOfYear | NSCalendarUnitWeekday;
+        NSDateComponents *components = [_gregorian components:unit fromDate:date];
+        
+        NSDateComponents *resultComponents = [[NSDateComponents alloc] init];
+        [resultComponents setWeekday:components.weekday];
+        [resultComponents setWeekOfYear:components.weekOfYear];
+        [resultComponents setYearForWeekOfYear:components.yearForWeekOfYear];
+        
+        NSDate *result = [_gregorian dateFromComponents:resultComponents];
+        return result;
+    }
+    else if (calendarType == DJCalendarTypeMonth) {
+        NSCalendarUnit unit = NSCalendarUnitYear | NSCalendarUnitMonth;
+        NSDateComponents *components = [_gregorian components:unit fromDate:date];
+        
+        NSDateComponents *resultComponents = [[NSDateComponents alloc] init];
+        [resultComponents setDay:1];
+        [resultComponents setMonth:components.month];
+        [resultComponents setYear:components.year];
+        
+        NSDate *result = [_gregorian dateFromComponents:resultComponents];
+        return result;
+    }
+    else {
+        // DJCalendarTypeYear
+        NSCalendarUnit unit = NSCalendarUnitYear;
+        NSDateComponents *components = [_gregorian components:unit fromDate:date];
+        
+        NSDateComponents *resultComponents = [[NSDateComponents alloc] init];
+        [resultComponents setDay:1];
+        [resultComponents setMonth:1];
+        [resultComponents setYear:components.year];
+        
+        NSDate *result = [_gregorian dateFromComponents:resultComponents];
+        return result;
+    }
+}
 
 - (NSString *)calendarTypeStr
 {
@@ -105,12 +198,14 @@
 #pragma mark - DJCalendarTypeDay
 - (NSString *)minDateApiStrForTypeDay
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
         
@@ -124,7 +219,7 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
         
@@ -135,12 +230,14 @@
 
 - (NSString *)maxDateApiStrForTypeDay
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
         NSString *endDateString = startDateString;
@@ -155,7 +252,7 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
         
         NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",endComponents.year, endComponents.month, endComponents.day];
         
@@ -166,12 +263,14 @@
 
 - (NSString *)showInLabelStrForTypeDay
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
         
         NSString *labelString = [NSString stringWithFormat:@"%zd年%zd月%zd日", startComponents.year, startComponents.month, startComponents.day];
         
@@ -185,8 +284,8 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:startDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitMonth | NSCalendarUnitDay fromDate:endDate];
         
         NSString *labelString = [NSString stringWithFormat:@"%zd月%zd日-%zd月%zd日", startComponents.month,startComponents.day, endComponents.month, endComponents.day];
         
@@ -199,13 +298,15 @@
 #pragma mark - DJCalendarTypeWeek
 - (NSString *)minDateApiStrForTypeWeek
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
         
@@ -221,7 +322,7 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:startDate];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:startDate];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
         
@@ -232,13 +333,15 @@
 
 - (NSString *)maxDateApiStrForTypeWeek
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",startComponents.year, startComponents.month, startComponents.day];
         NSString *endDateString = startDateString;
@@ -255,7 +358,7 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:endDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:endDate];
         
         NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd%02zd",endComponents.year, endComponents.month, endComponents.day];
         
@@ -266,18 +369,20 @@
 
 - (NSString *)showInLabelStrForTypeWeek
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:date];
         
         NSDateComponents *comps = [[NSDateComponents alloc] init];
         [comps setDay:7];
-        NSDate *dateAfterSeven = [gregorian dateByAddingComponents:comps toDate:date options:0];
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:dateAfterSeven];
+        NSDate *dateAfterSeven = [_gregorian dateByAddingComponents:comps toDate:date options:0];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:dateAfterSeven];
         
         NSString *labelString = [NSString stringWithFormat:@"%zd月%zd号-%zd月%zd号/%zd年", startComponents.month, startComponents.day, endComponents.month, endComponents.day, startComponents.year];
         
@@ -293,8 +398,8 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:startDate];
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:endDate];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:startDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekOfYear fromDate:endDate];
         
         NSString *labelString = [NSString stringWithFormat:@"第%zd周-第%zd周", startComponents.weekOfYear, endComponents.weekOfYear];
         
@@ -307,13 +412,15 @@
 #pragma mark - DJCalendarTypeMonth
 - (NSString *)minDateApiStrForTypeMonth
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:date];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd",startComponents.year, startComponents.month];
         
@@ -328,7 +435,7 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:startDate];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:startDate];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd",startComponents.year, startComponents.month];
         
@@ -339,13 +446,15 @@
 
 - (NSString *)maxDateApiStrForTypeMonth
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:date];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd%02zd",startComponents.year, startComponents.month];
         NSString *endDateString = startDateString;
@@ -361,7 +470,7 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:endDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:endDate];
         
         NSString *endDateString = [NSString stringWithFormat:@"%zd%02zd",endComponents.year, endComponents.month];
         
@@ -372,13 +481,15 @@
 
 - (NSString *)showInLabelStrForTypeMonth
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:date];
 
         NSString *labelString = [NSString stringWithFormat:@"%zd年%zd月", startComponents.year, startComponents.month];
         
@@ -393,8 +504,8 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:startDate];
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:endDate];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:startDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:endDate];
         
         NSString *labelString = [NSString stringWithFormat:@"%zd月-%zd月", startComponents.month, endComponents.month];
         
@@ -407,13 +518,15 @@
 #pragma mark - DJCalendarTypeYear
 - (NSString *)minDateApiStrForTypeYear
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear fromDate:date];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd",startComponents.year];
         
@@ -429,7 +542,7 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear fromDate:startDate];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear fromDate:startDate];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd", startComponents.year];
     
@@ -440,13 +553,15 @@
 
 - (NSString *)maxDateApiStrForTypeYear
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear fromDate:date];
         
         NSString *startDateString = [NSString stringWithFormat:@"%zd",startComponents.year];
         
@@ -462,7 +577,7 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitYear fromDate:endDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear fromDate:endDate];
         
         NSString *endDateString = [NSString stringWithFormat:@"%zd", endComponents.year];
         
@@ -473,13 +588,15 @@
 
 - (NSString *)showInLabelStrForTypeYear
 {
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    gregorian.minimumDaysInFirstWeek = 4;
+    if (!_gregorian) {
+        _gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        _gregorian.minimumDaysInFirstWeek = DJMinimumDaysInFirstWeek;
+    }
     
     if (_chooseType == DJChooseTypeSingle) {
         
         NSDate *date = _minDate;
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear fromDate:date];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear fromDate:date];
         
         NSString *labelString = [NSString stringWithFormat:@"%zd年", startComponents.year];
         
@@ -495,8 +612,8 @@
             endDate = _minDate;
         }
         
-        NSDateComponents *startComponents = [gregorian components:NSCalendarUnitYear fromDate:startDate];
-        NSDateComponents *endComponents = [gregorian components:NSCalendarUnitYear fromDate:endDate];
+        NSDateComponents *startComponents = [_gregorian components:NSCalendarUnitYear fromDate:startDate];
+        NSDateComponents *endComponents = [_gregorian components:NSCalendarUnitYear fromDate:endDate];
         
         NSString *labelString = [NSString stringWithFormat:@"%zd年-%zd年", startComponents.year, endComponents.year];
         

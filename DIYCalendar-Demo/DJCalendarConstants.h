@@ -9,15 +9,16 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
+#define DJMinimumDaysInFirstWeek    4
 
 typedef NS_ENUM(NSUInteger, DJChooseType) {
-    DJChooseTypeSingle,
-    DJChooseTypeMuti
+    DJChooseTypeSingle      = 0,
+    DJChooseTypeMuti        = 1
 };
 
 typedef NS_ENUM(NSUInteger, DJCalendarType) {
-    DJCalendarTypeDay,
-    DJCalendarTypeWeek,
-    DJCalendarTypeMonth,
-    DJCalendarTypeYear
+    DJCalendarTypeDay       = 0,
+    DJCalendarTypeWeek      = 1,
+    DJCalendarTypeMonth     = 2,
+    DJCalendarTypeYear      = 3
 };

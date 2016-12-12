@@ -43,7 +43,7 @@ typedef void(^CallBackBlock)(DJCalendarObject *obj);
 /**
     使用前的配置方法
  */
-- (void)setup:(DJCalendarObject *)obj minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block;
+- (void)setup:(DJCalendarObject *)obj block:(CallBackBlock)block;
 
 /**
     子控制器通过调用它，退出日历选择控件（内部实现可自己实现Pop还是Dismiss）

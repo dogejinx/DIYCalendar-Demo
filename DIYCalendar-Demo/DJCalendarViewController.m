@@ -32,7 +32,9 @@
     [super viewDidLoad];
     [self initUI];
     
-    
+    NSInteger index = _calendarObject.calendarType;
+    CGFloat offset_X = _scrollView.bounds.size.width * index;
+    [_scrollView setContentOffset:CGPointMake(offset_X, 0) animated:YES];
 }
 
 - (void)initUI {
@@ -54,7 +56,8 @@
 - (void)loadView
 {
     if (!_calendarStartDate && !_calendarEndDate) {
-        self.calendarStartDate = [self.dateFormatter dateFromString:@"2011-01-02"];
+        // 此版本暂时写死显示范围
+        self.calendarStartDate = [self.dateFormatter dateFromString:@"2011-01-01"];
         self.calendarEndDate = [NSDate date];
     }
     
@@ -186,21 +189,16 @@
     [_scrollView setContentOffset:CGPointMake(offset_X, 0) animated:YES];
 }
 
-- (void)setup:(DJCalendarObject *)obj minDate:(NSString *)minDate maxDate:(NSString *)maxDate block:(CallBackBlock)block
+- (void)setup:(DJCalendarObject *)obj block:(CallBackBlock)block
 {
-    if (_calendarObject && _chooseType != obj.chooseType) {
-        [_byDateVC forceClearData];
-        [_byWeekVC forceClearData];
-        [_byMonthVC forceClearData];
-        [_byYearVC forceClearData];
+    if (obj.chooseType == DJChooseTypeSingle) {
+        if (obj.minDate) {
+            obj.maxDate = obj.minDate;
+        }
     }
     
     self.calendarObject = obj;
     self.chooseType = obj.chooseType;
-    NSDate *startDate = [self.dateFormatter dateFromString:minDate];
-    NSDate *endDate = [self.dateFormatter dateFromString:maxDate];
-    self.calendarStartDate = startDate;
-    self.calendarEndDate = endDate;
     self.callBackBlock = block;
 }
 
