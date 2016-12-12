@@ -191,6 +191,12 @@
 
 - (void)setup:(DJCalendarObject *)obj block:(CallBackBlock)block
 {
+    if (obj.chooseType == DJChooseTypeSingle) {
+        if (obj.minDate) {
+            obj.maxDate = obj.minDate;
+        }
+    }
+    
     self.calendarObject = obj;
     self.chooseType = obj.chooseType;
     self.callBackBlock = block;

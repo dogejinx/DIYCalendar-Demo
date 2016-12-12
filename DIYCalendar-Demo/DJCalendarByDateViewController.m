@@ -15,7 +15,9 @@
 #import "DJToastView.h"
 
 @interface DJCalendarByDateViewController ()<FSCalendarDelegate,FSCalendarDataSource,FSCalendarDelegateAppearance>
-
+{
+    NSMutableArray<NSDate *> *_selectDateArr;// 记录用户点击的cell （单选模式1个，多选模式2个)
+}
 @property (nonatomic, strong) DJCalendarWeekView *weekView;
 @property (nonatomic, strong) FSCalendar *calendar;
 
@@ -43,26 +45,26 @@
     DJCalendarObject *obj = _fatherVC.calendarObject;
     if (obj.calendarType == DJCalendarTypeDay
         && obj.minDate && obj.maxDate) {
-        [_calendar selectDate:obj.maxDate];
-        [_calendar selectDate:obj.minDate scrollToDate:YES];
         
+        if (![_selectDateArr containsObject:obj.minDate]) {
+            [_selectDateArr addObject:obj.minDate];
+        }
         
+        if (![_selectDateArr containsObject:obj.maxDate]) {
+            [_selectDateArr addObject:obj.maxDate];
+        }
+        
+        if (![_calendar.selectedDates containsObject:obj.maxDate]) {
+            [_calendar selectDate:obj.maxDate];
+        }
+        
+        if (![_calendar.selectedDates containsObject:obj.minDate]) {
+            [_calendar selectDate:obj.minDate];
+        }
+        
+        [self configureVisibleCells];
         [_calendar reloadData];
         
-        
-        
-    }
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-    if (_chooseType == DJChooseTypeMuti) {
-        NSArray *arr = _calendar.selectedDates;
-        for (NSDate *date in arr) {
-            [_calendar deselectDate:date];
-        }
     }
 }
 
@@ -114,6 +116,8 @@
     self.maximumDate = _calendarEndDate;
     
     [self addToastView];
+    
+    _selectDateArr = [NSMutableArray array];
 }
 
 - (void)viewWillLayoutSubviews
@@ -166,9 +170,6 @@
 - (UIColor *)calendar:(FSCalendar *)calendar appearance:(FSCalendarAppearance *)appearance titleDefaultColorForDate:(NSDate *)date
 {
     if ([date compare:_calendar.minimumDate] >= 0 && [date compare:_calendar.maximumDate] <= 0) {
-        if ([self isBetweenRangeOfSelected:date]) {
-            return [UIColor whiteColor];
-        }
         
         if ([self.gregorian isDateInToday:date]) {
             return UIColorFromRGB(0xf54242);
@@ -188,19 +189,21 @@
 - (FSCalendarCell *)calendar:(FSCalendar *)calendar cellForDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
     DIYCalendarCell *cell = [calendar dequeueReusableCellWithIdentifier:@"DIYCalendarCell" forDate:date atMonthPosition:monthPosition];
+    [self configureCell:cell forDate:date atMonthPosition:monthPosition];
     return cell;
 }
 
 - (void)calendar:(FSCalendar *)calendar willDisplayCell:(FSCalendarCell *)cell forDate:(NSDate *)date atMonthPosition: (FSCalendarMonthPosition)monthPosition
 {
-    [self configureCell:cell forDate:date atMonthPosition:monthPosition];
+    
 }
 
 #pragma mark - FSCalendarDelegate
 
 - (BOOL)calendar:(FSCalendar *)calendar shouldSelectDate:(NSDate *)date atMonthPosition:(FSCalendarMonthPosition)monthPosition
 {
-    if (_calendar.selectedDates.count >= 2) {
+    if (_selectDateArr.count >= 2) {
+        [_selectDateArr removeAllObjects];
         NSArray *arr = _calendar.selectedDates;
         if (arr.count>0) {
             for (NSDate *date in arr) {
@@ -209,18 +212,6 @@
         }
     }
     
-    if (![self isValidRangeOfDay:_calendar.selectedDates.firstObject date:date]) {
-        [UIView animateWithDuration:0.15f animations:^{
-            _middleToast.alpha = 1;
-        } completion:^(BOOL finished) {
-            [UIView animateWithDuration:1.f animations:^{
-                _middleToast.alpha = 0.3;
-            } completion:^(BOOL finished) {
-                _middleToast.alpha = 0.0;
-            }];
-        }];
-        return NO;
-    }
     return YES;
 }
 
@@ -272,11 +263,14 @@
         
         SelectionType selectionType = SelectionTypeNone;
         
-        if ([self.calendar.selectedDates containsObject:date]) {
+        if ([_selectDateArr containsObject:date]) {
             selectionType = SelectionTypeSingle;
         } else {
             if ([self isBetweenRangeOfSelected:date]) {
                 selectionType = SelectionTypeMiddle;
+                if (![_calendar.selectedDates containsObject:date]) {
+                    [_calendar selectDate:date];
+                }
             }
         }
         
@@ -301,28 +295,72 @@
 
 - (void)clickAction:(NSDate *)date {
     if (_chooseType == DJChooseTypeSingle) {
-        if (_calendar.selectedDates.count > 1) {
-            return;
+        if (_selectDateArr.count >= 1) {
+            [_selectDateArr removeAllObjects];
+            
+            NSArray *arr = _calendar.selectedDates;
+            for (NSDate *temp in arr) {
+                [_calendar deselectDate:temp];
+            }
         }
         
+        [_selectDateArr addObject:date];
+        if (![_calendar.selectedDates containsObject:date]) {
+            [_calendar selectDate:date];
+        }
         [self configureVisibleCells];
         [self submitDate];
     }
     else {
-        if (_calendar.selectedDates.count > 2) {
-            return;
+        if (_selectDateArr.count >= 2) {
+            [_selectDateArr removeAllObjects];
+            
+            NSArray *arr = _calendar.selectedDates;
+            for (NSDate *temp in arr) {
+                [_calendar deselectDate:temp];
+            }
         }
         
+        if (![_selectDateArr containsObject:date]) {
+            if (![self isValidRangeOfDay:_selectDateArr.firstObject date:date]) {
+                if ([_calendar.selectedDates containsObject:date]) {
+                    [_calendar deselectDate:date];
+                }
+                
+                [UIView animateWithDuration:0.15f animations:^{
+                    _middleToast.alpha = 1;
+                } completion:^(BOOL finished) {
+                    [UIView animateWithDuration:1.f animations:^{
+                        _middleToast.alpha = 0.3;
+                    } completion:^(BOOL finished) {
+                        _middleToast.alpha = 0.0;
+                    }];
+                }];
+                return;
+            }
+            else {
+                [_selectDateArr addObject:date];
+                if (![_calendar.selectedDates containsObject:date]) {
+                    [_calendar selectDate:date];
+                }
+            }
+        }
+        else {
+            [_selectDateArr removeObject:date];
+            if ([_calendar.selectedDates containsObject:date]) {
+                [_calendar deselectDate:date];
+            }
+        }
         
-        if (_calendar.selectedDates.count == 0) {
+        if (_selectDateArr.count == 0) {
             [self configureVisibleCells];
             [_bottomToast updateTitleText:@"请选择日期"];
         }
-        else if (_calendar.selectedDates.count == 1) {
+        else if (_selectDateArr.count == 1) {
             [self configureVisibleCells];
             [_bottomToast updateTitleText:@"请再选择一个日期"];
         }
-        else if (_calendar.selectedDates.count == 2) {
+        else if (_selectDateArr.count == 2) {
             [self configureVisibleCells];
             [self submitDate];
         }
@@ -332,25 +370,23 @@
 - (void)submitDate
 {
     if (_chooseType == DJChooseTypeSingle) {
-        if (_calendar.selectedDate) {
-            NSDate *date = _calendar.selectedDate;
-            
-            DJCalendarObject *obj = [[DJCalendarObject alloc] init];
-            obj.calendarType = DJCalendarTypeDay;
-            obj.chooseType = _chooseType;
-            obj.minDate = date;
-            obj.maxDate = date;
-            
-            _fatherVC.callBackBlock(obj);
-            [_fatherVC dismissViewController];
-        }
+        NSDate *date = _calendar.selectedDate;
+        
+        DJCalendarObject *obj = [[DJCalendarObject alloc] init];
+        obj.calendarType = DJCalendarTypeDay;
+        obj.chooseType = _chooseType;
+        obj.minDate = date;
+        obj.maxDate = date;
+        
+        _fatherVC.callBackBlock(obj);
+        [_fatherVC dismissViewController];
     }
     else if (_chooseType == DJChooseTypeMuti) {
-        NSDate *startDate = _calendar.selectedDates.firstObject;
-        NSDate *endDate = _calendar.selectedDates.lastObject;
+        NSDate *startDate = _selectDateArr.firstObject;
+        NSDate *endDate = _selectDateArr.lastObject;
         if ([startDate timeIntervalSinceDate:endDate] > 0) {
-            startDate = _calendar.selectedDates.lastObject;
-            endDate = _calendar.selectedDates.firstObject;
+            startDate = _selectDateArr.lastObject;
+            endDate = _selectDateArr.firstObject;
         }
         
         DJCalendarObject *obj = [[DJCalendarObject alloc] init];
@@ -389,12 +425,12 @@
 
 - (BOOL)isBetweenRangeOfSelected:(NSDate *)date
 {
-    if (_calendar.selectedDates.count < 2) {
+    if (_selectDateArr.count < 2) {
         return NO;
     }
     
-    NSDate *dateX = _calendar.selectedDates.firstObject;
-    NSDate *dateY = _calendar.selectedDates.lastObject;
+    NSDate *dateX = _selectDateArr.firstObject;
+    NSDate *dateY = _selectDateArr.lastObject;
     
     NSDateComponents *dateFromX = [_gregorian components:NSCalendarUnitDay fromDate:date toDate:dateX options:0];
     NSDateComponents *dateFromY = [_gregorian components:NSCalendarUnitDay fromDate:date toDate:dateY options:0];

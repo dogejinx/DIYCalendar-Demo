@@ -57,6 +57,7 @@
         && obj.minDate && obj.maxDate) {
         
         [_monthDataArr enumerateObjectsUsingBlock:^(__kindof DJCalendarMonthDataObject * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
             [self configureObject:obj section:idx];
             
             if ([self selectArrFinished]) {

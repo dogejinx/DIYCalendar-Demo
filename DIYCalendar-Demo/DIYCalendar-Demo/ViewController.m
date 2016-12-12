@@ -23,9 +23,9 @@
     self.view.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:0.9];
     
     NSDateComponents *components = [[NSDateComponents alloc] init];
-    components.day = 1;
-    components.month = 1;
-    components.year = 2013;
+    components.day = 7;
+    components.month = 12;
+    components.year = 2016;
     NSDate *minDate = [[NSCalendar currentCalendar] dateFromComponents:components];
     
     {
