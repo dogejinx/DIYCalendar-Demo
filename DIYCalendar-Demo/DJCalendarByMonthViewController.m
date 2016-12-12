@@ -283,9 +283,10 @@
     }
     else {
         [self clickAction:indexPath];
+        [tableView reloadData];
     }
 
-    [tableView reloadData];
+    
 }
 
 - (BOOL)isInMonth:(NSDate *)date
